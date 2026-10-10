@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLab - ¡Nivel {{ nivel.nivel }} completado!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/recompensa.css') }}">
+</head>
+<body>
+    <!-- Canvas para el confeti -->
+    <canvas id="confeti-canvas"></canvas>
+
+    <div class="pantalla-recompensa">
+        <div class="contenedor-recompensa">
+
+            <!-- Icono de celebración -->
+            <div class="celebracion-icono">🎉</div>
+
+            <!-- Título -->
+            <h1 class="titulo-recompensa">¡Nivel {{ nivel.nivel }} completado!</h1>
+            <p class="subtitulo-recompensa">Felicidades, <strong>{{ nombre }}</strong></p>
+
+            <!-- Insignia -->
+            <div class="insignia-bloque">
+                <div class="insignia">{{ nivel.insignia.split(' ')[0] }}</div>
+                <div class="insignia-nombre">{{ nivel.insignia }}</div>
+            </div>
+
+            <!-- CM ganado -->
+            <div class="cm-ganado">
+                <span class="cm-icono">🧠</span>
+                <span class="cm-cantidad">+{{ cm_nivel }} CM</span>
+                <span class="cm-etiqueta">en este nivel</span>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="estadisticas-recompensa">
+                <div class="stat-recompensa">
+                    <div class="stat-valor">{{ progreso.cm_total }}</div>
+                    <div class="stat-etiqueta">CM TOTAL</div>
+                </div>
+                <div class="stat-recompensa">
+                    <div class="stat-valor">{{ progreso.nivel_actual - 1 }}/10</div>
+                    <div class="stat-etiqueta">NIVELES</div>
+                </div>
+                <div class="stat-recompensa">
+                    <div class="stat-valor">{{ progreso.vidas }}</div>
+                    <div class="stat-etiqueta">VIDAS</div>
+                </div>
+            </div>
+
+            <!-- Título desbloqueado -->
+            {% if nivel.titulo_desbloqueado %}
+            <div class="titulo-desbloqueado">
+                <div class="titulo-icono">🏆</div>
+                <div class="titulo-info">
+                    <div class="titulo-etiqueta">¡NUEVO TÍTULO DESBLOQUEADO!</div>
+                    <div class="titulo-nombre">{{ nivel.titulo_desbloqueado }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Botones -->
+            <div class="botones-recompensa">
+                {% if progreso.nivel_actual <= 10 %}
+                <a href="{{ url_for('nivel', num_nivel=progreso.nivel_actual) }}" class="boton boton-siguiente">
+                    Siguiente nivel →
+                </a>
+                {% else %}
+                <a href="{{ url_for('menu') }}" class="boton boton-siguiente">
+                    🏅 ¡Has completado el juego!
+                </a>
+                {% endif %}
+                <a href="{{ url_for('menu') }}" class="boton boton-secundario">
+                    Volver al menú
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script del confeti -->
+    <script src="{{ url_for('static', filename='js/confeti.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLab - Menú</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
+</head>
+<body>
+    <div class="pantalla-menu">
+        <div class="contenedor-menu">
+
+            <!-- Header con saludo y botón salir -->
+            <header class="header-menu">
+                <div class="saludo-bloque">
+                    <h1>{{ saludo }}, {{ nombre }} 👋</h1>
+                    <span class="titulo-actual">🏆 {{ progreso.titulo_actual }}</span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="boton-salir">Cerrar sesión</a>
+            </header>
+
+            <!-- Estadísticas -->
+            <div class="estadisticas">
+                <div class="tarjeta-stat stat-cm">
+                    <div class="stat-icono">🧠</div>
+                    <div class="stat-valor">{{ progreso.cm_total }}</div>
+                    <div class="stat-etiqueta">Coeficiente Mental</div>
+                </div>
+                <div class="tarjeta-stat stat-vidas">
+                    <div class="stat-icono">❤️</div>
+                    <div class="stat-valor">{{ progreso.vidas }}</div>
+                    <div class="stat-etiqueta">Vidas</div>
+                </div>
+                <div class="tarjeta-stat stat-nivel">
+                    <div class="stat-icono">📍</div>
+                    <div class="stat-valor">{{ progreso.nivel_actual }} / {{ total_niveles }}</div>
+                    <div class="stat-etiqueta">Nivel actual</div>
+                </div>
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="barra-progreso">
+                <div class="barra-progreso-relleno" style="width: {{ porcentaje_progreso }}%;"></div>
+            </div>
+            <div class="barra-info">
+                <span>Progreso: {{ porcentaje_progreso }}%</span>
+                <span>{{ progreso.cm_total }} / {{ cm_maximo }} CM</span>
+            </div>
+
+            <!-- Título de sección -->
+            <h2 class="titulo-seccion">Camino de progreso</h2>
+
+            <!-- Camino serpenteante -->
+            <div class="camino">
+                {% for n in niveles %}
+                    {% if n.nivel < progreso.nivel_actual %}
+                        {# Nivel completado #}
+                        <a href="{{ url_for('recompensa', num_nivel=n.nivel) }}" class="nivel-nodo completado">
+                            <div class="nivel-circulo">✓</div>
+                            <div class="nivel-info">
+                                <div class="nivel-numero">Nivel {{ n.nivel }}</div>
+                                <div class="nivel-titulo">{{ n.titulo }}</div>
+                                <div class="nivel-subtitulo">{{ n.subtitulo_psicologico }}</div>
+                            </div>
+                            <div class="nivel-flecha">↻</div>
+                        </a>
+                    {% elif n.nivel == progreso.nivel_actual %}
+                        {# Nivel actual #}
+                        <a href="{{ url_for('nivel', num_nivel=n.nivel) }}" class="nivel-nodo actual">
+                            <div class="nivel-circulo">{{ n.nivel }}</div>
+                            <div class="nivel-info">
+                                <div class="nivel-numero">Nivel {{ n.nivel }} · Jugando</div>
+                                <div class="nivel-titulo">{{ n.titulo }}</div>
+                                <div class="nivel-subtitulo">{{ n.subtitulo_psicologico }}</div>
+                            </div>
+                            <div class="nivel-flecha">▶</div>
+                        </a>
+                    {% else %}
+                        {# Nivel bloqueado #}
+                        <div class="nivel-nodo bloqueado">
+                            <div class="nivel-circulo">🔒</div>
+                            <div class="nivel-info">
+                                <div class="nivel-numero">Nivel {{ n.nivel }}</div>
+                                <div class="nivel-titulo">{{ n.titulo }}</div>
+                                <div class="nivel-subtitulo">Bloqueado</div>
+                            </div>
+                            <div class="nivel-flecha">🔒</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

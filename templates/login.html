@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLab - Iniciar sesión</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="pantalla-auth">
+        <div class="contenedor-auth">
+            <span class="icono-decorativo arriba-derecha">🧠</span>
+            <span class="icono-decorativo abajo-izquierda">🧠</span>
+
+            <div class="logo-auth">
+                <h1>🧠 NeuroLab</h1>
+                <p class="subtitulo">Laboratorio de la mente</p>
+            </div>
+
+            <form method="POST" class="formulario-auth">
+                <h2>Iniciar sesión</h2>
+
+                {% if error %}
+                <div class="mensaje-error">{{ error }}</div>
+                {% endif %}
+
+                <div class="campo">
+                    <label for="nombre">Nombre de usuario</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required autofocus>
+                </div>
+
+                <div class="campo">
+                    <label for="contrasena">Contraseña</label>
+                    <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="boton">Entrar →</button>
+            </form>
+
+            <p class="cambio-auth">
+                ¿No tienes cuenta?
+                <a href="{{ url_for('registro') }}">Regístrate</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

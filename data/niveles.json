@@ -1,0 +1,320 @@
+{
+  "configuracion_global": {
+    "vidas_iniciales": 3,
+    "tiempo_regeneracion_vida_segundos": 180,
+    "cm_por_titulo": {
+      "nivel_3": "Aprendiz Mental",
+      "nivel_6": "Analista Cognitivo",
+      "nivel_9": "Mente Maestra",
+      "nivel_10": "Cima del Conocimiento"
+    }
+  },
+  "niveles": [
+    {
+      "nivel": 1,
+      "titulo": "El borreguito de miel",
+      "subtitulo_psicologico": "Duelo por muerte y objetos de anclaje emocional",
+      "archivo_lectura": "lecturas/nivel_01_borreguito.txt",
+      "tipo_puzzle": "completar_frase",
+      "tiempo_segundos": 180,
+      "cm_base": 100,
+      "cm_bonus_tiempo": 30,
+      "insignia": "🐑 Borreguito",
+      "titulo_desbloqueado": null,
+      "puzzle": {
+        "frases": [
+          { "texto": "Mi bisabuelita Rosa siempre llevaba dulces de ___ en los bolsillos de su delantal.", "respuesta": "miel", "opciones": ["miel", "café", "mantequilla", "azúcar"] },
+          { "texto": "Sus manos estaban ___ por los años, pero eran suaves.", "respuesta": "arrugaditas", "opciones": ["arrugaditas", "duras", "frías", "temblorosas"] },
+          { "texto": "Siempre contaba historias de cuando era una niña y de lo mucho que le gustaba acompañar a su mamá a hacer ___.", "respuesta": "trueque", "opciones": ["trueque", "mandado", "comida", "limpieza"] },
+          { "texto": "Los dulces los guardaba en un ___ azul, junto a su florero lleno de rosas.", "respuesta": "alhajero", "opciones": ["alhajero", "cajón", "estuche", "cofre"] },
+          { "texto": "Mi abue cada vez estaba más arrugadita y ___, su cabello pasó de un gris platinado a ser tocado por la nieve.", "respuesta": "encorvada", "opciones": ["encorvada", "delgada", "pálida", "cansada"] },
+          { "texto": "Al enterarme de la noticia, entré a mi habitación y tomé el borreguito, lo tiré al cubo de ___ .", "respuesta": "basura", "opciones": ["basura", "ropa", "jardín", "olvido"] },
+          { "texto": "Ella me decía, mi borreguito de miel, porque era güerito y con unos hermosos ___ que heredé de ella.", "respuesta": "rulos", "opciones": ["rulos", "ojos", "cabellos", "brazos"] }
+        ]
+      }
+    },
+    {
+      "nivel": 2,
+      "titulo": "Amor color morado",
+      "subtitulo_psicologico": "Empatía, consuelo y sanación emocional",
+      "archivo_lectura": "lecturas/nivel_02_amor_morado.txt",
+      "tipo_puzzle": "sopa_de_letras",
+      "tiempo_segundos": 180,
+      "cm_base": 120,
+      "cm_bonus_tiempo": 40,
+      "insignia": "💜 Pañuelo morado",
+      "titulo_desbloqueado": null,
+      "puzzle": {
+        "palabras": ["VENECIA", "GONDOLA", "ALONDRA", "PAÑUELO", "MORADO", "CANAL", "SIRENA", "PUENTE", "ARLO", "VINO", "BASILICA"],
+        "grid_size": 14,
+        "direcciones": ["horizontal", "vertical"]
+      }
+    },
+    {
+      "nivel": 3,
+      "titulo": "Naturaleza muerta",
+      "subtitulo_psicologico": "Percepción, ilusión y lo artificial vs. lo real",
+      "archivo_lectura": "lecturas/nivel_03_naturaleza_muerta.txt",
+      "tipo_puzzle": "memorama_conceptual",
+      "tiempo_segundos": 165,
+      "cm_base": 150,
+      "cm_bonus_tiempo": 50,
+      "insignia": "🌿 Naturaleza muerta",
+      "titulo_desbloqueado": "Aprendiz Mental",
+      "puzzle": {
+        "pares": [
+          { "termino": "Lilas", "definicion": "Flores de color apacible" },
+          { "termino": "Rosas de té", "definicion": "Pétalos esponjados" },
+          { "termino": "Manzanas", "definicion": "Fruta con pelusilla" },
+          { "termino": "Peras", "definicion": "Doradas y apetitosas" },
+          { "termino": "Uvas", "definicion": "Negras con polvillo ceniciento" },
+          { "termino": "Cortinajes", "definicion": "Amarillos y opulentos" },
+          { "termino": "Trípode", "definicion": "Base del tiesto" },
+          { "termino": "Cera y mármol", "definicion": "Materiales falsos de la escena" }
+        ]
+      }
+    },
+    {
+      "nivel": 4,
+      "titulo": "Bello colibrí",
+      "subtitulo_psicologico": "Pérdida, espera y significado afectivo",
+      "archivo_lectura": "lecturas/nivel_04_colibri.txt",
+      "tipo_puzzle": "verdadero_falso",
+      "tiempo_segundos": 150,
+      "cm_base": 180,
+      "cm_bonus_tiempo": 60,
+      "insignia": "🕊️ Colibrí",
+      "titulo_desbloqueado": null,
+      "puzzle": {
+        "afirmaciones": [
+          { "texto": "El narrador conoció al colibrí en primavera.", "respuesta": true },
+          { "texto": "El narrador se sentía parte del grupo y nunca fue llamado raro.", "respuesta": false },
+          { "texto": "El narrador subía al tejado para ver el amanecer.", "respuesta": true },
+          { "texto": "El colibrí se posó sobre el hombro del narrador sin miedo.", "respuesta": true },
+          { "texto": "El colibrí se quedó a vivir para siempre con el narrador.", "respuesta": false },
+          { "texto": "El narrador espera al colibrí cada ocho de abril.", "respuesta": true },
+          { "texto": "El colibrí dejó tres plumas de distintos colores.", "respuesta": true },
+          { "texto": "El narrador odiaba los atardeceres.", "respuesta": false }
+        ]
+      }
+    },
+    {
+      "nivel": 5,
+      "titulo": "La matuschka",
+      "subtitulo_psicologico": "Amor maternal, pérdida en contexto de guerra y duelo colectivo",
+      "archivo_lectura": "lecturas/nivel_05_matuschka.txt",
+      "tipo_puzzle": "crucigrama",
+      "tiempo_segundos": 150,
+      "cm_base": 220,
+      "cm_bonus_tiempo": 70,
+      "insignia": "🥁 Tambor de Nicolasín",
+      "titulo_desbloqueado": null,
+      "puzzle": {
+      "grid_ancho": 10,
+      "grid_alto": 10,
+      "palabras": [
+    {
+      "numero": 1,
+      "palabra": "TAMBOR",
+      "pista": "Instrumento que Nicolasín tocaba con amor",
+      "direccion": "horizontal",
+      "fila": 0,
+      "col": 0
+    },
+    {
+      "numero": 2,
+      "palabra": "RUSIA",
+      "pista": "Patria que defendían los soldados",
+      "direccion": "vertical",
+      "fila": 0,
+      "col": 2
+    },
+    {
+      "numero": 3,
+      "palabra": "SANGRE",
+      "pista": "Lo que cubría a Nicolás al llegar a la ambulancia",
+      "direccion": "horizontal",
+      "fila": 3,
+      "col": 2
+    },
+    {
+      "numero": 4,
+      "palabra": "SCHNAPS",
+      "pista": "Bebida que la matuschka guardaba en su tonel",
+      "direccion": "vertical",
+      "fila": 3,
+      "col": 6
+    },
+    {
+      "numero": 5,
+      "palabra": "NEVADA",
+      "pista": "Fenómeno que comenzó muy entrada la noche",
+      "direccion": "horizontal",
+      "fila": 5,
+      "col": 4
+    },
+    {
+      "numero": 6,
+      "palabra": "LOBA",
+      "pista": "Animal con el que comparan el llanto de la matuschka",
+      "direccion": "vertical",
+      "fila": 5,
+      "col": 8
+    },
+    {
+      "numero": 7,
+      "palabra": "MATUSCHKA",
+      "pista": "Nombre con que los soldados llamaban a la anciana del regimiento",
+      "direccion": "horizontal",
+      "fila": 8,
+      "col": 0
+    },
+    {
+      "numero": 8,
+      "palabra": "NICOLASIN",
+      "pista": "El tambor más joven y querido del regimiento",
+      "direccion": "vertical",
+      "fila": 8,
+      "col": 5
+    }
+  ]
+}
+    },
+    {
+      "nivel": 6,
+      "titulo": "Los elefantes olvidan",
+      "subtitulo_psicologico": "Ruptura del vínculo y memoria emocional",
+      "archivo_lectura": "lecturas/nivel_06_elefantes.txt",
+      "tipo_puzzle": "completar_frase",
+      "tiempo_segundos": 135,
+      "cm_base": 260,
+      "cm_bonus_tiempo": 80,
+      "insignia": "🐘 Elefante",
+      "titulo_desbloqueado": "Analista Cognitivo",
+      "puzzle": {
+        "frases": [
+          { "texto": "El equipo favorito de él es ___.", "respuesta": "Inglaterra" },
+          { "texto": "Su comida favorita son los chiles en ___.", "respuesta": "nogada" },
+          { "texto": "Odia el café sin ___.", "respuesta": "azúcar" },
+          { "texto": "Cuando está enojado se le nota la ___.", "respuesta": "yugular" },
+          { "texto": "En el paso 4, lo único que debes conservar es el peluche de ___.", "respuesta": "elefante" },
+          { "texto": "El paso 7 dice que fallarás en todas las anteriores cuando lo veas con otra ___.", "respuesta": "chica" },
+          { "texto": "Al final, el corazón se rompe como las ___ de la escuela.", "respuesta": "ventanas" }
+        ]
+      }
+    },
+    {
+      "nivel": 7,
+      "titulo": "Fragmento: El pájaro azul",
+      "subtitulo_psicologico": "Creatividad atrapada, locura y libertad mental",
+      "archivo_lectura": "lecturas/nivel_07_pajaro_azul.txt",
+      "tipo_puzzle": "sopa_de_letras",
+      "tiempo_segundos": 120,
+      "cm_base": 300,
+      "cm_bonus_tiempo": 90,
+      "insignia": "🐦 Pájaro azul",
+      "titulo_desbloqueado": null,
+      "puzzle": {
+        "palabras": ["GARCIN", "PAJARO", "AZUL", "CEREBRO", "JAULA", "LIBERTAD", "PARIS", "AJENJO", "NINI", "VIOLETAS", "POETA"],
+        "grid_size": 15,
+        "direcciones": ["horizontal", "vertical", "diagonal"]
+      }
+    },
+    {
+      "nivel": 8,
+      "titulo": "Fragmento: El velo de la reina Mab",
+      "subtitulo_psicologico": "Sueños, desesperación creativa y consuelo",
+      "archivo_lectura": "lecturas/nivel_08_velo_mab.txt",
+      "tipo_puzzle": "memorama_conceptual",
+      "tiempo_segundos": 120,
+      "cm_base": 350,
+      "cm_bonus_tiempo": 100,
+      "insignia": "🌌 Velo de Mab",
+      "titulo_desbloqueado": null,
+      "puzzle": {
+        "pares": [
+          { "termino": "Escultor", "definicion": "Trabaja el mármol y sueña con Venus" },
+          { "termino": "Pintor", "definicion": "Romperá sus pinceles por desencanto" },
+          { "termino": "Músico", "definicion": "Oye la música de los astros" },
+          { "termino": "Poeta", "definicion": "Tiene el verso de miel, oro y hierro" },
+          { "termino": "Reina Mab", "definicion": "Llega en carro de una sola perla" },
+          { "termino": "Velo azul", "definicion": "Velo de los sueños que da esperanza" },
+          { "termino": "Boardilla", "definicion": "Lugar donde viven los artistas pobres" },
+          { "termino": "Farándula", "definicion": "Baile extraño alrededor de un Apolo" }
+        ]
+      }
+    },
+    {
+      "nivel": 9,
+      "titulo": "Fragmento: El rey burgués",
+      "subtitulo_psicologico": "Arte vs. poder, cosificación del artista",
+      "archivo_lectura": "lecturas/nivel_09_rey_burgues.txt",
+      "tipo_puzzle": "verdadero_falso",
+      "tiempo_segundos": 105,
+      "cm_base": 400,
+      "cm_bonus_tiempo": 110,
+      "insignia": "👑 Rey burgués",
+      "titulo_desbloqueado": "Mente Maestra",
+      "puzzle": {
+        "afirmaciones": [
+          { "texto": "El rey tenía un poeta entre sus cisnes y canarios.", "respuesta": false },
+          { "texto": "El poeta pidió comida antes de hablar.", "respuesta": true },
+          { "texto": "El rey decidió que el poeta girara un manubrio para ganarse el pan.", "respuesta": true },
+          { "texto": "El poeta murió en el invierno, junto al estanque de los cisnes.", "respuesta": true },
+          { "texto": "El filósofo sugirió que el poeta fuera expulsado del reino.", "respuesta": false },
+          { "texto": "El poeta decía que el arte no viste pantalones ni habla en burgués.", "respuesta": true },
+          { "texto": "El rey y sus cortesanos se olvidaron del poeta cuando cayó la nieve.", "respuesta": true },
+          { "texto": "El poeta murió con una sonrisa de felicidad en los labios.", "respuesta": false }
+        ]
+      }
+    },
+    {
+      "nivel": 10,
+      "titulo": "La gallina y yo",
+      "subtitulo_psicologico": "Apego adolescente, rechazo y duelo por pérdida afectiva",
+      "archivo_lectura": "lecturas/nivel_10_gallina.txt",
+      "tipo_puzzle": "mezcla_final",
+      "tiempo_segundos": 140,
+      "cm_base": 1000,
+      "cm_bonus_tiempo": 150,
+      "insignia": "🏅 Cima del Conocimiento",
+      "titulo_desbloqueado": "Cima del Conocimiento",
+      "puzzle": {
+        "retos": [
+          {
+            "tipo": "completar_frase",
+            "texto": "En la feria, Javi y Lily ganaron un peluche de una ___.",
+            "respuesta": "gallina",
+            "opciones": ["gallina", "vaca", "oveja", "pata"]
+          },
+          {
+            "tipo": "verdadero_falso",
+            "texto": "Javi le dijo a Lily que la quería antes de bajarse de la rueda.",
+            "respuesta": false
+          },
+          {
+            "tipo": "sopa_de_letras_corta",
+            "palabras": ["FERIA", "GALLINA", "LLUVIA"]
+          },
+          {
+            "tipo": "memorama",
+            "pares": [
+              { "termino": "Javi", "definicion": "El amigo que se fue sin volver" },
+              { "termino": "Gallina", "definicion": "Lo último que quedó de él" }
+            ]
+          },
+          {
+            "tipo": "crucigrama",
+            "palabra": "HAZEL",
+            "pista": "Color de los ojos de Javi que cambiaban según la luz"
+          },
+          {
+            "tipo": "frase_final",
+            "texto": "Completa la frase final del cuento: \"Solo éramos la ___ y yo.\"",
+            "respuesta": "gallina"
+          }
+        ]
+      }
+    } 
+  ]
+}  

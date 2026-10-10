@@ -1,0 +1,173 @@
+/* ============================================================
+   NEUROLAB - LOGIN Y REGISTRO
+   ============================================================ */
+
+.pantalla-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: var(--espaciado-md);
+    position: relative;
+}
+
+.contenedor-auth {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(30, 41, 59, 0.75);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xxl) var(--espaciado-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 0.6s ease both;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Línea superior decorativa con gradiente */
+.contenedor-auth::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario), var(--color-primario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+@keyframes gradienteMovil {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+/* Logo */
+.logo-auth {
+    text-align: center;
+    margin-bottom: var(--espaciado-xl);
+}
+
+.logo-auth h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: var(--espaciado-xs);
+    letter-spacing: -0.03em;
+}
+
+.logo-auth .subtitulo {
+    color: var(--color-texto-suave);
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+/* Formulario */
+.formulario-auth {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-md);
+}
+
+.formulario-auth h2 {
+    font-size: 1.4rem;
+    color: var(--color-texto);
+    margin-bottom: var(--espaciado-sm);
+    text-align: center;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-xs);
+}
+
+.campo label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-left: var(--espaciado-xs);
+}
+
+.campo input {
+    font-size: 1rem;
+}
+
+.formulario-auth .boton {
+    margin-top: var(--espaciado-sm);
+    width: 100%;
+}
+
+/* Enlace de cambio login/registro */
+.cambio-auth {
+    text-align: center;
+    margin-top: var(--espaciado-lg);
+    padding-top: var(--espaciado-md);
+    border-top: 1px solid rgba(139, 92, 246, 0.15);
+    color: var(--color-texto-suave);
+    font-size: 0.95rem;
+}
+
+.cambio-auth a {
+    color: var(--color-secundario);
+    font-weight: 700;
+    margin-left: var(--espaciado-xs);
+    position: relative;
+}
+
+.cambio-auth a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-secundario);
+    transition: width var(--transicion-media);
+}
+
+.cambio-auth a:hover::after {
+    width: 100%;
+}
+
+/* Icono decorativo del cerebro */
+.icono-decorativo {
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.03;
+    pointer-events: none;
+    user-select: none;
+}
+
+.icono-decorativo.arriba-derecha {
+    top: -20px;
+    right: -20px;
+    transform: rotate(15deg);
+}
+
+.icono-decorativo.abajo-izquierda {
+    bottom: -30px;
+    left: -30px;
+    transform: rotate(-15deg);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .contenedor-auth {
+        padding: var(--espaciado-lg) var(--espaciado-md);
+    }
+
+    .logo-auth h1 {
+        font-size: 2rem;
+    }
+
+    .icono-decorativo {
+        font-size: 5rem;
+    }
+}
