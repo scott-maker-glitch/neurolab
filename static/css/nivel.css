@@ -909,6 +909,15 @@
     animation: fadeInUp 0.5s ease;
     position: relative;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    .puzzle-crucigrama {
+        padding: var(--espaciado-md);
+    }
 }
 
 .puzzle-crucigrama::before {
@@ -955,9 +964,35 @@
 .crucigrama-layout {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: var(--espaciado-xl);
+    gap: var(--espaciado-lg);
     margin-top: var(--espaciado-md);
     align-items: start;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.crucigrama-pistas {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.pista-item {
+    padding: var(--espaciado-sm) var(--espaciado-md);
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: var(--radio-sm);
+    font-size: 0.85rem;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all var(--transicion-media);
+    border-left: 3px solid transparent;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .crucigrama-grid {
@@ -1021,6 +1056,7 @@
 /* ============================================================
    INPUT DEL CRUCIGRAMA
    ============================================================ */
+
 .celda-input {
     position: absolute;
     top: 0;
@@ -1068,12 +1104,6 @@
     -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Pistas */
-.crucigrama-pistas {
-    display: flex;
-    flex-direction: column;
-    gap: var(--espaciado-lg);
-}
 
 .pistas-seccion h3 {
     font-size: 0.85rem;
@@ -1092,17 +1122,6 @@
     gap: var(--espaciado-xs);
 }
 
-.pista-item {
-    padding: var(--espaciado-sm) var(--espaciado-md);
-    background: rgba(15, 23, 42, 0.5);
-    border-radius: var(--radio-sm);
-    font-size: 0.85rem;
-    color: var(--color-texto);
-    cursor: pointer;
-    transition: all var(--transicion-media);
-    border-left: 3px solid transparent;
-    line-height: 1.5;
-}
 
 .pista-item:hover {
     background: rgba(139, 92, 246, 0.1);
@@ -1137,6 +1156,7 @@
 @media (max-width: 900px) {
     .crucigrama-layout {
         grid-template-columns: 1fr;
+        gap: var(--espaciado-md);
     }
     .celda-crucigrama {
         width: 32px;
@@ -1145,23 +1165,39 @@
     .celda-input {
         font-size: 1rem;
     }
-    .crucigrama-aviso {
+    .crucigrama-pistas {
+        width: 100%;
+    }
+    .pista-item {
         font-size: 0.8rem;
+        padding: var(--espaciado-xs) var(--espaciado-sm);
     }
 }
 
 @media (max-width: 500px) {
     .celda-crucigrama {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
     }
     .celda-input {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
     .celda-numero {
         font-size: 0.5rem;
     }
+    .crucigrama-grid {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    .pista-item {
+        font-size: 0.75rem;
+        padding: var(--espaciado-xs);
+    }
+    .pista-item em {
+        font-size: 0.65rem;
+    }
 }
+
 
 /* ============================================================
    PUZZLE: MEZCLA FINAL (Nivel 10)
