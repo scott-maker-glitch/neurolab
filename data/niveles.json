@@ -39,7 +39,7 @@
       "subtitulo_psicologico": "Empatía, consuelo y sanación emocional",
       "archivo_lectura": "lecturas/nivel_02_amor_morado.txt",
       "tipo_puzzle": "sopa_de_letras",
-      "tiempo_segundos": 180,
+      "tiempo_segundos": 150,
       "cm_base": 120,
       "cm_bonus_tiempo": 40,
       "insignia": "💜 Pañuelo morado",
@@ -104,7 +104,7 @@
       "subtitulo_psicologico": "Amor maternal, pérdida en contexto de guerra y duelo colectivo",
       "archivo_lectura": "lecturas/nivel_05_matuschka.txt",
       "tipo_puzzle": "crucigrama",
-      "tiempo_segundos": 150,
+      "tiempo_segundos": 180,
       "cm_base": 220,
       "cm_bonus_tiempo": 70,
       "insignia": "🥁 Tambor de Nicolasín",
@@ -132,7 +132,7 @@
       "subtitulo_psicologico": "Ruptura del vínculo y memoria emocional",
       "archivo_lectura": "lecturas/nivel_06_elefantes.txt",
       "tipo_puzzle": "completar_frase",
-      "tiempo_segundos": 135,
+      "tiempo_segundos": 100,
       "cm_base": 260,
       "cm_bonus_tiempo": 80,
       "insignia": "🐘 Elefante",
@@ -220,7 +220,7 @@
       "subtitulo_psicologico": "Apego adolescente, rechazo y duelo por pérdida afectiva",
       "archivo_lectura": "lecturas/nivel_10_gallina.txt",
       "tipo_puzzle": "mezcla_final",
-      "tiempo_segundos": 140,
+      "tiempo_segundos": 150,
       "cm_base": 1000,
       "cm_bonus_tiempo": 150,
       "insignia": "🏅 Cima del Conocimiento",
@@ -240,19 +240,34 @@
           },
           {
             "tipo": "sopa_de_letras_corta",
-            "palabras": ["FERIA", "GALLINA", "LLUVIA"]
+            "palabras": ["FERIA", "GALLINA", "JAVI", "LILY", "HAZEL", "MONTAÑA", "CARRUSEL", "FUEGOS", "PELUCHE"],
+            "grid_size": 12
           },
           {
             "tipo": "memorama",
             "pares": [
               { "termino": "Javi", "definicion": "El amigo que se fue sin volver" },
-              { "termino": "Gallina", "definicion": "Lo último que quedó de él" }
+              { "termino": "Gallina", "definicion": "Lo último que quedó de él" },
+              { "termino": "Feria", "definicion": "Donde ocurrió la cita" },
+              { "termino": "Montaña rusa", "definicion": "Donde Lily tuvo miedo" },
+              { "termino": "Hazel", "definicion": "Color de los ojos de Javi" },
+              { "termino": "Lluvia", "definicion": "Lo que acompañó su llanto" }
             ]
           },
           {
             "tipo": "crucigrama",
-            "palabra": "HAZEL",
-            "pista": "Color de los ojos de Javi que cambiaban según la luz"
+            "grid_ancho": 12,
+            "grid_alto": 8,
+            "palabras": [
+              { "numero": 1, "palabra": "HAZEL", "pista": "Color de los ojos de Javi que cambiaban según la luz", "direccion": "vertical", "fila": 0, "col": 2 },
+              { "numero": 2, "palabra": "JAVI", "pista": "El amigo que se fue sin volver", "direccion": "horizontal", "fila": 1, "col": 1 },
+              { "numero": 3, "palabra": "LILY", "pista": "La narradora que se quedó con la gallina", "direccion": "horizontal", "fila": 2, "col": 8 },
+              { "numero": 4, "palabra": "PELUCHE", "pista": "Lo que ganaron en la feria y quedó como recuerdo", "direccion": "horizontal", "fila": 4, "col": 0 },
+              { "numero": 5, "palabra": "FERIA", "pista": "Donde ocurrió la cita de Javi y Lily", "direccion": "vertical", "fila": 3, "col": 6 },
+              { "numero": 6, "palabra": "MONTAÑA", "pista": "Donde Lily y Javi vivieron aventuras de niños", "direccion": "horizontal", "fila": 7, "col": 2 },
+              { "numero": 7, "palabra": "LLUVIA", "pista": "Lo que acompañó el llanto de Lily", "direccion": "vertical", "fila": 2, "col": 8 },
+              { "numero": 8, "palabra": "ALGODON", "pista": "Dulce que Javi le prometió a Lily", "direccion": "vertical", "fila": 1, "col": 10 }
+            ]
           },
           {
             "tipo": "frase_final",
@@ -263,4 +278,4 @@
       }
     }
   ]
-}
+}  

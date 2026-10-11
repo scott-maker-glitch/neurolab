@@ -26,7 +26,7 @@ class PuzzleCompletarFrase {
         contenedor.innerHTML = `
             <div class="puzzle-completar">
                 <div class="puzzle-header">
-                    <span class="puzzle-progreso">Frase ${this.indiceActual + 1} / ${this.frases.length}</span>
+                    <span class="puzzle-progreso" id="progreso-frase">Frase ${this.indiceActual + 1} / ${this.frases.length}</span>
                     <span class="puzzle-intentos" id="intentos-fallidos">Fallos: 0 / 2</span>
                     <span class="puzzle-cm" id="cm-acumulado">+${this.cmAcumulado} CM</span>
                 </div>
@@ -58,7 +58,7 @@ class PuzzleCompletarFrase {
             </div>
 
             <div class="opciones-puzzle" id="opciones-puzzle">
-                ${frase.opciones.map((opcion, i) => `
+                ${(frase.opciones || []).map((opcion, i) => `
                     <button class="opcion" data-opcion="${opcion}" data-indice="${i}">
                         ${opcion}
                     </button>
@@ -121,6 +121,12 @@ class PuzzleCompletarFrase {
                 this.bloqueado = false;
                 this.renderizarFrase();
                 this.actualizarBarra();
+
+                // ⬇️ ACTUALIZAR EL TEXTO "FRASE X / Y"
+                const progresoEl = document.getElementById('progreso-frase');
+                if (progresoEl) {
+                    progresoEl.textContent = `Frase ${this.indiceActual + 1} / ${this.frases.length}`;
+                }
             }
         }, 1200);
     }

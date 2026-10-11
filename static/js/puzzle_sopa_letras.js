@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: SOPA DE LETRAS (v2 - con touch móvil)
+   NEUROLAB - PUZZLE: SOPA DE LETRAS (v3 - con timeout y pérdida de vida)
    ============================================================ */
 
 class PuzzleSopaLetras {
@@ -70,6 +70,7 @@ class PuzzleSopaLetras {
 
             if (direccion === 'horizontal') c = col + i;
             else if (direccion === 'vertical') f = fila + i;
+            else if (direccion === 'diagonal') { f = fila + i; c = col + i; }
 
             if (f >= this.gridSize || c >= this.gridSize) return null;
             if (this.grid[f][c] && this.grid[f][c] !== palabra[i]) return null;
@@ -89,7 +90,7 @@ class PuzzleSopaLetras {
         contenedor.innerHTML = `
             <div class="puzzle-sopa">
                 <div class="puzzle-header">
-                    <span class="puzzle-progreso">Palabras: ${this.palabrasEncontradas.size} / ${this.palabras.length}</span>
+                    <span class="puzzle-progreso" id="progreso-sopa">Palabras: ${this.palabrasEncontradas.size} / ${this.palabras.length}</span>
                     <span class="puzzle-cm" id="cm-acumulado">+${this.cmAcumulado} CM</span>
                 </div>
 
@@ -136,7 +137,7 @@ class PuzzleSopaLetras {
         grid.addEventListener('mouseover', (e) => this.extenderSeleccion(e));
         document.addEventListener('mouseup', () => this.terminarSeleccion());
 
-        // Touch móvil — usar passive: false para poder hacer preventDefault
+        // Touch móvil
         grid.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
@@ -162,7 +163,7 @@ class PuzzleSopaLetras {
     }
 
     // ============================================================
-    // HELPERS PARA OBTENER CELDA (mouse o touch)
+    // HELPERS
     // ============================================================
     obtenerCeldaPorElemento(elemento) {
         if (!elemento || !elemento.classList) return null;
@@ -180,7 +181,7 @@ class PuzzleSopaLetras {
     }
 
     // ============================================================
-    // SELECCIÓN CON MOUSE
+    // SELECCIÓN
     // ============================================================
     iniciarSeleccion(e) {
         const celda = this.obtenerCeldaPorElemento(e.target);
@@ -200,9 +201,6 @@ class PuzzleSopaLetras {
         this.extenderHastaCelda(celda);
     }
 
-    // ============================================================
-    // SELECCIÓN CON TOUCH
-    // ============================================================
     iniciarSeleccionDesdeTouch(touch) {
         const celda = this.obtenerCeldaPorTouch(touch);
         if (!celda) return;
@@ -221,14 +219,11 @@ class PuzzleSopaLetras {
         this.extenderHastaCelda(celda);
     }
 
-    // ============================================================
-    // LÓGICA COMÚN DE EXTENSIÓN
-    // ============================================================
     extenderHastaCelda(celda) {
         const df = celda.fila - this.celdaInicio.fila;
         const dc = celda.col - this.celdaInicio.col;
 
-        if (df !== 0 && dc !== 0) return; // Solo recto
+        if (df !== 0 && dc !== 0) return;
         if (df === 0 && dc === 0) return;
 
         this.celdaFin = celda;
@@ -299,7 +294,12 @@ class PuzzleSopaLetras {
         this.cmAcumulado += cmPalabra;
         document.getElementById('cm-acumulado').textContent = `+${this.cmAcumulado} CM`;
 
-        document.querySelector('.puzzle-progreso').textContent = `Palabras: ${this.palabrasEncontradas.size} / ${this.palabras.length}`;
+        // Actualizar el contador de progreso
+        const progresoEl = document.getElementById('progreso-sopa');
+        if (progresoEl) {
+            progresoEl.textContent = `Palabras: ${this.palabrasEncontradas.size} / ${this.palabras.length}`;
+        }
+
         this.actualizarBarra();
 
         if (this.palabrasEncontradas.size >= this.palabras.length) {
@@ -310,8 +310,8 @@ class PuzzleSopaLetras {
     }
 
     async fallo() {
-        // En la sopa de letras NO se pierden vidas. Solo se limpia la selección
-        // y se muestra un pequeño feedback visual.
+        // En la sopa de letras NO se pierden vidas al fallar.
+        // Solo se limpia la selección y se muestra feedback visual.
         this.limpiarSeleccion();
 
         const grid = document.getElementById('sopa-grid');
@@ -345,7 +345,7 @@ class PuzzleSopaLetras {
         const elementoTiempo = document.getElementById('tiempo-restante');
         const elementoTemporizador = document.getElementById('temporizador');
 
-        this.temporizador = setInterval(() => {
+        this.temporizador = setInterval(async () => {
             this.tiempoRestante--;
             if (elementoTiempo) elementoTiempo.textContent = this.tiempoRestante;
 
@@ -360,7 +360,33 @@ class PuzzleSopaLetras {
 
             if (this.tiempoRestante <= 0) {
                 clearInterval(this.temporizador);
-                this.derrota('Se acabó el tiempo');
+
+                // ⚠️ Se acabó el tiempo: pierde 1 vida
+                try {
+                    const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
+                    const datos = await respuesta.json();
+                    this.vidas = datos.vidas;
+                } catch (error) {
+                    console.error('Error perdiendo vida por timeout:', error);
+                }
+
+                // Mostrar mensaje de tiempo agotado
+                const contenedor = document.getElementById('contenedor-puzzle');
+                if (contenedor) {
+                    contenedor.innerHTML = `
+                        <div class="puzzle-derrota">
+                            <div class="derrota-icono">⏱️</div>
+                            <h2>¡Se acabó el tiempo!</h2>
+                            <p>Perdiste 1 vida.</p>
+                            <p class="derrota-info">Vidas restantes: ${this.vidas}</p>
+                            <p>Redirigiendo al menú...</p>
+                        </div>
+                    `;
+                }
+
+                setTimeout(() => {
+                    window.location.href = '/menu';
+                }, 2000);
             }
         }, 1000);
     }

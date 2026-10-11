@@ -28,7 +28,7 @@ class PuzzleVerdaderoFalso {
         contenedor.innerHTML = `
             <div class="puzzle-vf">
                 <div class="puzzle-header">
-                    <span class="puzzle-progreso">Afirmación ${this.indiceActual + 1} / ${this.afirmaciones.length}</span>
+                    <span class="puzzle-progreso" id="progreso-afirmacion">Afirmación ${this.indiceActual + 1} / ${this.afirmaciones.length}</span>
                     ${this.usarIntentos ? '<span class="puzzle-intentos" id="intentos-fallidos">Fallos: 0 / 2</span>' : ''}
                     <span class="puzzle-cm" id="cm-acumulado">+${this.cmAcumulado} CM</span>
                 </div>
@@ -122,6 +122,12 @@ class PuzzleVerdaderoFalso {
                 this.bloqueado = false;
                 this.renderizarAfirmacion();
                 this.actualizarBarra();
+
+                // ⬇️ ACTUALIZAR EL TEXTO "AFIRMACIÓN X / Y"
+                const progresoEl = document.getElementById('progreso-afirmacion');
+                if (progresoEl) {
+                    progresoEl.textContent = `Afirmación ${this.indiceActual + 1} / ${this.afirmaciones.length}`;
+                }
             }
         }, 1200);
     }
@@ -154,7 +160,7 @@ class PuzzleVerdaderoFalso {
                 }
             }
         } else {
-            // Nivel 9: cada fallo resta 1 vida (comportamiento original)
+            // Nivel 9: cada fallo resta 1 vida
             try {
                 const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
                 const datos = await respuesta.json();

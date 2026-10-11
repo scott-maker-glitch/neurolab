@@ -267,15 +267,21 @@ def menu():
     progreso = obtener_progreso(current_user.id)
     niveles_data = cargar_niveles()
 
+    total_niveles = len(niveles_data["niveles"])
+
+    # CM máximo teórico (se sigue mostrando)
     cm_maximo = sum(n["cm_base"] + n["cm_bonus_tiempo"] for n in niveles_data["niveles"])
-    porcentaje_progreso = int((progreso["cm_total"] / cm_maximo) * 100) if cm_maximo > 0 else 0
+
+    # El % de progreso se calcula por NIVELES COMPLETADOS (llega al 100% al terminar)
+    niveles_completados = max(0, progreso["nivel_actual"] - 1)
+    porcentaje_progreso = int((niveles_completados / total_niveles) * 100) if total_niveles > 0 else 0
 
     return render_template(
         "menu.html",
         nombre=current_user.nombre_usuario,
         saludo=obtener_saludo(),
         progreso=progreso,
-        total_niveles=len(niveles_data["niveles"]),
+        total_niveles=total_niveles,
         niveles=niveles_data["niveles"],
         cm_maximo=cm_maximo,
         porcentaje_progreso=porcentaje_progreso,
@@ -465,9 +471,13 @@ def recompensa(num_nivel):
 
     conexion.close()
 
-    # Calcular % de progreso
+    # Calcular % de progreso por NIVELES COMPLETADOS
+    total_niveles = len(niveles_data["niveles"])
+    niveles_completados = num_nivel
+    porcentaje_progreso = int((niveles_completados / total_niveles) * 100) if total_niveles > 0 else 0
+
+    # CM máximo teórico (se sigue mostrando)
     cm_maximo = sum(n["cm_base"] + n["cm_bonus_tiempo"] for n in niveles_data["niveles"])
-    porcentaje_progreso = int((progreso["cm_total"] / cm_maximo) * 100) if cm_maximo > 0 else 0
 
     return render_template(
         "recompensa.html",

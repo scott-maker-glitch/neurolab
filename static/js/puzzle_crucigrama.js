@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: CRUCIGRAMA (v4 - corregido)
+   NEUROLAB - PUZZLE: CRUCIGRAMA (v5 - verificación automática)
    ============================================================ */
 
 class PuzzleCrucigrama {
@@ -17,6 +17,10 @@ class PuzzleCrucigrama {
         this.palabrasResueltas = new Set();
         this.temporizador = null;
 
+        // Nuevo: contador de errores
+        this.erroresConsecutivos = 0;
+        this.ERRORES_POR_VIDA = 3;
+
         this.grid = [];
         this.celdas = {};
         this.celdaActiva = null;
@@ -27,7 +31,6 @@ class PuzzleCrucigrama {
     }
 
     construirGrid() {
-        // Inicializar grid vacío
         for (let f = 0; f < this.gridAlto; f++) {
             this.grid[f] = [];
             for (let c = 0; c < this.gridAncho; c++) {
@@ -35,7 +38,6 @@ class PuzzleCrucigrama {
             }
         }
 
-        // Colocar cada palabra
         this.palabras.forEach(palabra => {
             const letras = palabra.palabra;
             for (let i = 0; i < letras.length; i++) {
@@ -48,7 +50,6 @@ class PuzzleCrucigrama {
                     f += i;
                 }
 
-                // Verificar que esté dentro del grid
                 if (f < 0 || f >= this.gridAlto || c < 0 || c >= this.gridAncho) {
                     console.warn(`Palabra "${palabra.palabra}" fuera del grid en (${f},${c})`);
                     continue;
@@ -78,8 +79,14 @@ class PuzzleCrucigrama {
 
         contenedor.innerHTML = `
             <div class="puzzle-crucigrama">
+                <!-- Leyenda de reglas -->
+                <div class="crucigrama-aviso">
+                    ⚠️ <strong>Recuerda:</strong> por cada 3 palabras erróneas pierdes una vida.
+                </div>
+
                 <div class="puzzle-header">
-                    <span class="puzzle-progreso">Palabras: ${this.palabrasResueltas.size} / ${this.palabras.length}</span>
+                    <span class="puzzle-progreso" id="progreso-palabras">Palabras: ${this.palabrasResueltas.size} / ${this.palabras.length}</span>
+                    <span class="puzzle-errores" id="contador-errores">Errores: 0 / ${this.ERRORES_POR_VIDA}</span>
                     <span class="puzzle-cm" id="cm-acumulado">+${this.cmAcumulado} CM</span>
                 </div>
 
@@ -114,10 +121,6 @@ class PuzzleCrucigrama {
                             </ul>
                         </div>
                     </div>
-                </div>
-
-                <div class="crucigrama-controles">
-                    <button class="boton-verificar" id="btn-verificar">✓ Verificar crucigrama</button>
                 </div>
             </div>
         `;
@@ -167,11 +170,6 @@ class PuzzleCrucigrama {
                 this.activarPalabra(numPalabra);
             });
         });
-
-        const btnVerificar = document.getElementById('btn-verificar');
-        if (btnVerificar) {
-            btnVerificar.addEventListener('click', () => this.verificarCrucigrama());
-        }
     }
 
     alEscribir(input) {
@@ -290,7 +288,7 @@ class PuzzleCrucigrama {
     }
 
     // ============================================================
-    // NAVEGACIÓN (nombres corregidos)
+    // NAVEGACIÓN
     // ============================================================
     moverSiguiente(input) {
         if (this.direccionActiva === 'horizontal') {
@@ -361,7 +359,7 @@ class PuzzleCrucigrama {
     }
 
     // ============================================================
-    // VERIFICACIÓN
+    // VERIFICACIÓN AUTOMÁTICA
     // ============================================================
     verificarPalabraActual(input) {
         const fila = parseInt(input.dataset.fila);
@@ -381,7 +379,9 @@ class PuzzleCrucigrama {
     verificarPalabra(palabra) {
         const yaResuelta = this.palabrasResueltas.has(palabra.numero);
 
+        // Construir la palabra actual
         let palabraActual = '';
+        let celdasLlenas = 0;
         for (let i = 0; i < palabra.palabra.length; i++) {
             let f = palabra.fila;
             let c = palabra.col;
@@ -389,16 +389,80 @@ class PuzzleCrucigrama {
             else f += i;
 
             const input = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${c}"]`);
-            if (input) palabraActual += input.value.toUpperCase();
+            if (input) {
+                palabraActual += input.value.toUpperCase();
+                if (input.value) celdasLlenas++;
+            }
         }
 
-        if (palabraActual === palabra.palabra) {
-            if (!yaResuelta) {
-                this.marcarPalabraResuelta(palabra);
+        // Solo verificar cuando esté COMPLETA
+        if (celdasLlenas === palabra.palabra.length) {
+            if (palabraActual === palabra.palabra) {
+                // ✅ Correcta
+                if (!yaResuelta) {
+                    this.marcarPalabraResuelta(palabra);
+                }
+            } else {
+                // ❌ Incorrecta
+                if (!yaResuelta) {
+                    this.registrarError(palabra);
+                }
             }
         } else if (yaResuelta) {
+            // Si ya estaba resuelta pero se borró alguna letra, desmarcar
             this.desmarcarPalabra(palabra);
         }
+    }
+
+    async registrarError(palabra) {
+        // Marcar la palabra como incorrecta visualmente
+        this.marcarPalabraIncorrecta(palabra);
+
+        // Sumar 1 al contador de errores
+        this.erroresConsecutivos++;
+
+        // Actualizar contador en pantalla
+        const contadorEl = document.getElementById('contador-errores');
+        if (contadorEl) {
+            contadorEl.textContent = `Errores: ${this.erroresConsecutivos} / ${this.ERRORES_POR_VIDA}`;
+        }
+
+        // Si llega a 3 errores, pierde 1 vida
+        if (this.erroresConsecutivos >= this.ERRORES_POR_VIDA) {
+            this.erroresConsecutivos = 0;
+            if (contadorEl) {
+                contadorEl.textContent = `Errores: 0 / ${this.ERRORES_POR_VIDA}`;
+            }
+
+            try {
+                const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
+                const datos = await respuesta.json();
+                this.vidas = datos.vidas;
+                this.actualizarVidasUI();
+
+                if (this.vidas <= 0) {
+                    setTimeout(() => this.derrota('Te quedaste sin vidas'), 1000);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error perdiendo vida:', error);
+            }
+        }
+
+        // Borrar la palabra después de un delay para que el jugador pueda reintentar
+        setTimeout(() => {
+            for (let i = 0; i < palabra.palabra.length; i++) {
+                let f = palabra.fila;
+                let c = palabra.col;
+                if (palabra.direccion === 'horizontal') c += i;
+                else f += i;
+
+                const input = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${c}"]`);
+                if (input) {
+                    input.value = '';
+                }
+            }
+        }, 1000);
     }
 
     marcarPalabraResuelta(palabra) {
@@ -421,7 +485,10 @@ class PuzzleCrucigrama {
         this.cmAcumulado += cmPalabra;
         document.getElementById('cm-acumulado').textContent = `+${this.cmAcumulado} CM`;
 
-        document.querySelector('.puzzle-progreso').textContent = `Palabras: ${this.palabrasResueltas.size} / ${this.palabras.length}`;
+        const progresoEl = document.getElementById('progreso-palabras');
+        if (progresoEl) {
+            progresoEl.textContent = `Palabras: ${this.palabrasResueltas.size} / ${this.palabras.length}`;
+        }
         this.actualizarBarra();
 
         if (this.palabrasResueltas.size >= this.palabras.length) {
@@ -449,53 +516,11 @@ class PuzzleCrucigrama {
         this.cmAcumulado = Math.max(0, this.cmAcumulado - cmPalabra);
         document.getElementById('cm-acumulado').textContent = `+${this.cmAcumulado} CM`;
 
-        document.querySelector('.puzzle-progreso').textContent = `Palabras: ${this.palabrasResueltas.size} / ${this.palabras.length}`;
+        const progresoEl = document.getElementById('progreso-palabras');
+        if (progresoEl) {
+            progresoEl.textContent = `Palabras: ${this.palabrasResueltas.size} / ${this.palabras.length}`;
+        }
         this.actualizarBarra();
-    }
-
-    async verificarCrucigrama() {
-        let errores = 0;
-
-        this.palabras.forEach(palabra => {
-            if (this.palabrasResueltas.has(palabra.numero)) return;
-
-            let palabraActual = '';
-            for (let i = 0; i < palabra.palabra.length; i++) {
-                let f = palabra.fila;
-                let c = palabra.col;
-                if (palabra.direccion === 'horizontal') c += i;
-                else f += i;
-
-                const input = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${c}"]`);
-                if (input) palabraActual += input.value.toUpperCase();
-            }
-
-            if (palabraActual === palabra.palabra) {
-                this.marcarPalabraResuelta(palabra);
-            } else if (palabraActual.length === palabra.palabra.length) {
-                errores++;
-                this.marcarPalabraIncorrecta(palabra);
-            }
-        });
-
-        if (this.palabrasResueltas.size >= this.palabras.length) {
-            return;
-        }
-
-        if (errores > 0) {
-            try {
-                const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
-                const datos = await respuesta.json();
-                this.vidas = datos.vidas;
-                this.actualizarVidasUI();
-
-                if (this.vidas <= 0) {
-                    setTimeout(() => this.derrota('Te quedaste sin vidas'), 1000);
-                }
-            } catch (error) {
-                console.error('Error perdiendo vida:', error);
-            }
-        }
     }
 
     marcarPalabraIncorrecta(palabra) {
@@ -508,7 +533,7 @@ class PuzzleCrucigrama {
             const celda = document.querySelector(`.celda-crucigrama[data-fila="${f}"][data-col="${c}"]`);
             if (celda) {
                 celda.classList.add('incorrecta');
-                setTimeout(() => celda.classList.remove('incorrecta'), 1500);
+                setTimeout(() => celda.classList.remove('incorrecta'), 1000);
             }
         }
     }
@@ -530,7 +555,7 @@ class PuzzleCrucigrama {
         const elementoTiempo = document.getElementById('tiempo-restante');
         const elementoTemporizador = document.getElementById('temporizador');
 
-        this.temporizador = setInterval(() => {
+        this.temporizador = setInterval(async () => {
             this.tiempoRestante--;
             if (elementoTiempo) elementoTiempo.textContent = this.tiempoRestante;
 
@@ -545,7 +570,32 @@ class PuzzleCrucigrama {
 
             if (this.tiempoRestante <= 0) {
                 clearInterval(this.temporizador);
-                this.derrota('Se acabó el tiempo');
+
+                // ⚠️ Se acabó el tiempo: pierde 1 vida
+                try {
+                    const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
+                    const datos = await respuesta.json();
+                    this.vidas = datos.vidas;
+                } catch (error) {
+                    console.error('Error perdiendo vida por timeout:', error);
+                }
+
+                const contenedor = document.getElementById('contenedor-puzzle');
+                if (contenedor) {
+                    contenedor.innerHTML = `
+                        <div class="puzzle-derrota">
+                            <div class="derrota-icono">⏱️</div>
+                            <h2>¡Se acabó el tiempo!</h2>
+                            <p>Perdiste 1 vida.</p>
+                            <p class="derrota-info">Vidas restantes: ${this.vidas}</p>
+                            <p>Redirigiendo al menú...</p>
+                        </div>
+                    `;
+                }
+
+                setTimeout(() => {
+                    window.location.href = '/menu';
+                }, 2000);
             }
         }, 1000);
     }

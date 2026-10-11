@@ -1,5 +1,8 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10)
+   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10) - v4
+   - Memorama: 3 errores = 1 vida
+   - Crucigrama: 3 errores = 1 vida + auto-avance + navegación
+   - Frase final: 1 error = 1 vida
    ============================================================ */
 
 class PuzzleMezclaFinal {
@@ -15,6 +18,11 @@ class PuzzleMezclaFinal {
         this.faseActual = 0;
         this.temporizador = null;
 
+        this.memIntentosFallidos = 0;
+        this.memERRORES_POR_VIDA = 3;
+        this.cruciIntentosFallidos = 0;
+        this.cruciERRORES_POR_VIDA = 3;
+
         this.inicializarUI();
     }
 
@@ -23,7 +31,7 @@ class PuzzleMezclaFinal {
         contenedor.innerHTML = `
             <div class="puzzle-mezcla">
                 <div class="puzzle-header">
-                    <span class="puzzle-progreso">Fase ${this.faseActual + 1} / ${this.retos.length}</span>
+                    <span class="puzzle-progreso" id="progreso-fase">Fase ${this.faseActual + 1} / ${this.retos.length}</span>
                     <span class="puzzle-cm" id="cm-acumulado">+${this.cmAcumulado} CM</span>
                 </div>
 
@@ -37,15 +45,13 @@ class PuzzleMezclaFinal {
 
         this.renderizarFase();
         this.actualizarBarra();
-        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
-        // this.iniciarTemporizador();
     }
 
     actualizarBarra() {
         const porcentaje = (this.faseActual / this.retos.length) * 100;
         const barra = document.getElementById('barra-puzzle');
         if (barra) barra.style.width = `${porcentaje}%`;
-        const prog = document.querySelector('.puzzle-progreso');
+        const prog = document.getElementById('progreso-fase');
         if (prog) prog.textContent = `Fase ${this.faseActual + 1} / ${this.retos.length}`;
     }
 
@@ -64,7 +70,9 @@ class PuzzleMezclaFinal {
         this.actualizarBarra();
     }
 
+    // ============================================================
     // FASE 1: COMPLETAR FRASE
+    // ============================================================
     renderCompletarFrase(contenedor, reto) {
         const partes = reto.texto.split('___');
         contenedor.innerHTML = `
@@ -95,7 +103,9 @@ class PuzzleMezclaFinal {
         });
     }
 
-    // FASE 2: V/F
+    // ============================================================
+    // FASE 2: VERDADERO / FALSO
+    // ============================================================
     renderVerdaderoFalso(contenedor, reto) {
         contenedor.innerHTML = `
             <div class="mezcla-fase">
@@ -129,16 +139,17 @@ class PuzzleMezclaFinal {
         });
     }
 
-    // FASE 3: SOPA CORTA
+    // ============================================================
+    // FASE 3: SOPA DE LETRAS
+    // ============================================================
     renderSopaCorta(contenedor, reto) {
-        const size = 8;
+        const size = reto.grid_size || 12;
         const grid = Array(size).fill(null).map(() => Array(size).fill(''));
         const palabras = reto.palabras;
-        const posiciones = {};
 
         palabras.forEach(palabra => {
             let colocada = false, intentos = 0;
-            while (!colocada && intentos < 100) {
+            while (!colocada && intentos < 200) {
                 intentos++;
                 const dir = Math.random() < 0.5 ? 'h' : 'v';
                 const f = Math.floor(Math.random() * size);
@@ -154,7 +165,6 @@ class PuzzleMezclaFinal {
                 }
                 if (cabe) {
                     celdas.forEach((celda, i) => { grid[celda.f][celda.c] = palabra[i]; });
-                    posiciones[palabra] = celdas;
                     colocada = true;
                 }
             }
@@ -171,11 +181,21 @@ class PuzzleMezclaFinal {
             <div class="mezcla-fase">
                 <div class="fase-icono">🔍</div>
                 <h2 class="fase-titulo">Fase 3: Sopa de letras</h2>
-                <p class="fase-instruccion">Encuentra: ${palabras.join(' · ')}</p>
-                <div class="sopa-corta-grid" id="sopa-corta" style="grid-template-columns: repeat(${size}, 1fr);">
-                    ${grid.map((fila, f) => fila.map((letra, c) =>
-                        `<div class="celda-sopa-corta" data-fila="${f}" data-col="${c}">${letra}</div>`
-                    ).join('')).join('')}
+                <div class="sopa-corta-layout">
+                    <div class="sopa-corta-grid" id="sopa-corta" style="grid-template-columns: repeat(${size}, 1fr);">
+                        ${grid.map((fila, f) => fila.map((letra, c) =>
+                            `<div class="celda-sopa-corta" data-fila="${f}" data-col="${c}">${letra}</div>`
+                        ).join('')).join('')}
+                    </div>
+                    <div class="sopa-corta-palabras">
+                        <h3>Palabras a encontrar:</h3>
+                        <ul id="lista-palabras-corta">
+                            ${palabras.map(p => `
+                                <li class="palabra-item-corta" data-palabra="${p}">${p}</li>
+                            `).join('')}
+                        </ul>
+                        <p class="sopa-progreso">Encontradas: <span id="sopa-contador">0</span> / ${palabras.length}</p>
+                    </div>
                 </div>
             </div>
         `;
@@ -219,6 +239,12 @@ class PuzzleMezclaFinal {
             if (enc) {
                 this.sopaState.encontradas.add(enc);
                 this.sopaState.celdas.forEach(c => { c.el.classList.remove('seleccionada'); c.el.classList.add('encontrada-sopa'); });
+
+                const item = document.querySelector(`.palabra-item-corta[data-palabra="${enc}"]`);
+                if (item) item.classList.add('encontrada');
+
+                const contadorEl = document.getElementById('sopa-contador');
+                if (contadorEl) contadorEl.textContent = this.sopaState.encontradas.size;
                 if (this.sopaState.encontradas.size >= this.sopaState.palabras.length) this.siguienteFase(80);
             } else {
                 this.sopaState.celdas.forEach(c => c.el.classList.remove('seleccionada'));
@@ -244,7 +270,9 @@ class PuzzleMezclaFinal {
         this.sopaState.celdas.forEach(c => c.el.classList.add('seleccionada'));
     }
 
-    // FASE 4: MEMORAMA
+    // ============================================================
+    // FASE 4: MEMORAMA (3 errores = 1 vida)
+    // ============================================================
     renderMemorama(contenedor, reto) {
         const cartas = [];
         reto.pares.forEach((par, idx) => {
@@ -256,13 +284,18 @@ class PuzzleMezclaFinal {
             [cartas[i], cartas[j]] = [cartas[j], cartas[i]];
         }
 
+        this.memIntentosFallidos = 0;
         this.memState = { volt: [], enc: 0, total: reto.pares.length, bloqueado: false };
 
         contenedor.innerHTML = `
             <div class="mezcla-fase">
                 <div class="fase-icono">🎴</div>
                 <h2 class="fase-titulo">Fase 4: Memorama</h2>
-                <p class="fase-instruccion">Empareja término con definición.</p>
+                <p class="fase-instruccion">
+                    Empareja término con definición.
+                    Pares: <span id="mem-contador">0</span> / ${reto.pares.length}
+                    · Fallos: <span id="mem-fallos">0</span> / ${this.memERRORES_POR_VIDA}
+                </p>
                 <div class="memorama-grid-mini">
                     ${cartas.map((c, i) => `
                         <div class="carta-memorama" data-indice="${i}" data-par-id="${c.parId}" data-tipo="${c.tipo}">
@@ -296,6 +329,8 @@ class PuzzleMezclaFinal {
                     c1.classList.add('encontrada');
                     c2.classList.add('encontrada');
                     this.memState.enc++;
+                    const contadorEl = document.getElementById('mem-contador');
+                    if (contadorEl) contadorEl.textContent = this.memState.enc;
                     this.memState.volt = [];
                     this.memState.bloqueado = false;
                     if (this.memState.enc >= this.memState.total) this.siguienteFase(80);
@@ -304,63 +339,337 @@ class PuzzleMezclaFinal {
                 setTimeout(() => {
                     c1.classList.add('incorrecta');
                     c2.classList.add('incorrecta');
-                    this.perderVida(() => {
-                        c1.classList.remove('volteada', 'incorrecta');
-                        c2.classList.remove('volteada', 'incorrecta');
-                        this.memState.volt = [];
-                        this.memState.bloqueado = false;
-                    });
+
+                    this.memIntentosFallidos++;
+                    const fallosEl = document.getElementById('mem-fallos');
+                    if (fallosEl) fallosEl.textContent = this.memIntentosFallidos;
+
+                    if (this.memIntentosFallidos >= this.memERRORES_POR_VIDA) {
+                        this.memIntentosFallidos = 0;
+                        if (fallosEl) fallosEl.textContent = 0;
+                        this.perderVida(() => {
+                            c1.classList.remove('volteada', 'incorrecta');
+                            c2.classList.remove('volteada', 'incorrecta');
+                            this.memState.volt = [];
+                            this.memState.bloqueado = false;
+                        });
+                    } else {
+                        setTimeout(() => {
+                            c1.classList.remove('volteada', 'incorrecta');
+                            c2.classList.remove('volteada', 'incorrecta');
+                            this.memState.volt = [];
+                            this.memState.bloqueado = false;
+                        }, 1000);
+                    }
                 }, 800);
             }
         }
     }
 
-    // FASE 5: CRUCIGRAMA
+    // ============================================================
+    // FASE 5: CRUCIGRAMA (3 errores = 1 vida + auto-avance)
+    // ============================================================
     renderCrucigrama(contenedor, reto) {
-        const palabra = reto.palabra;
+        const gridAncho = reto.grid_ancho || 12;
+        const gridAlto = reto.grid_alto || 8;
+        const palabras = reto.palabras;
+
+        this.cruciIntentosFallidos = 0;
+
+        // Construir grid
+        const grid = [];
+        for (let f = 0; f < gridAlto; f++) {
+            grid[f] = [];
+            for (let c = 0; c < gridAncho; c++) {
+                grid[f][c] = { tipo: 'negra', letra: '', palabras: [] };
+            }
+        }
+
+        palabras.forEach(palabra => {
+            const letras = palabra.palabra;
+            for (let i = 0; i < letras.length; i++) {
+                let f = palabra.fila;
+                let c = palabra.col;
+                if (palabra.direccion === 'horizontal') c += i;
+                else f += i;
+
+                if (f < 0 || f >= gridAlto || c < 0 || c >= gridAncho) continue;
+
+                grid[f][c].tipo = 'blanca';
+                grid[f][c].palabras.push(palabra.numero);
+            }
+        });
+
         contenedor.innerHTML = `
             <div class="mezcla-fase">
                 <div class="fase-icono">🧩</div>
                 <h2 class="fase-titulo">Fase 5: Crucigrama</h2>
-                <p class="fase-instruccion"><strong>Pista:</strong> ${reto.pista}</p>
-                <div class="crucigrama-mini" style="grid-template-columns: repeat(${palabra.length}, 1fr);">
-                    ${palabra.split('').map((_, i) => `
-                        <div class="celda-crucigrama-mini">
-                            <input type="text" maxlength="1" class="input-crucigrama-mini" data-indice="${i}" autocomplete="off">
+                <p class="fase-instruccion" style="color: var(--color-advertencia); font-weight: 600;">
+                    ⚠️ Cada 3 palabras erróneas pierdes 1 vida
+                </p>
+                <div class="crucigrama-layout" style="display: grid; grid-template-columns: auto 1fr; gap: 2rem; margin-top: 1rem; text-align: left;">
+                    <div class="crucigrama-grid" id="cruci-grid-10" style="display: grid; gap: 2px; grid-template-columns: repeat(${gridAncho}, 1fr);">
+                        ${grid.map((fila, f) => fila.map((celda, c) => {
+                            if (celda.tipo === 'negra') {
+                                return `<div class="celda-crucigrama negra"></div>`;
+                            }
+                            const palabraEmpiezaAqui = palabras.find(p => p.fila === f && p.col === c);
+                            const numero = palabraEmpiezaAqui ? palabraEmpiezaAqui.numero : '';
+                            return `
+                                <div class="celda-crucigrama blanca" data-fila="${f}" data-col="${c}">
+                                    ${numero ? `<span class="celda-numero">${numero}</span>` : ''}
+                                    <input type="text" maxlength="1" class="celda-input" data-fila="${f}" data-col="${c}" autocomplete="off" inputmode="text">
+                                </div>
+                            `;
+                        }).join('')).join('')}
+                    </div>
+                    <div class="crucigrama-pistas">
+                        <div class="pistas-seccion">
+                            <h3>Pistas</h3>
+                            <ul>
+                                ${palabras.map(p => `
+                                    <li class="pista-item" data-palabra="${p.numero}">
+                                        <strong>${p.numero}.</strong> ${p.pista} <em>(${p.palabra.length} letras)</em>
+                                    </li>
+                                `).join('')}
+                            </ul>
                         </div>
-                    `).join('')}
+                    </div>
                 </div>
-                <button class="boton" id="btn-verificar-cruci" style="margin-top: 1rem;">Verificar</button>
+                <div class="crucigrama-controles" style="margin-top: 1.5rem;">
+                    <button class="boton" id="btn-verificar-cruci">Verificar crucigrama</button>
+                </div>
+                <p style="margin-top: 1rem; color: var(--color-texto-suave); font-size: 0.9rem;">
+                    Fallos: <span id="cruci-fallos">0</span> / ${this.cruciERRORES_POR_VIDA}
+                </p>
             </div>
         `;
 
-        const inputs = document.querySelectorAll('.input-crucigrama-mini');
-        inputs.forEach((input, i) => {
+        const inputs = document.querySelectorAll('#cruci-grid-10 .celda-input');
+        let direccionActiva = 'horizontal';
+
+        // === HELPERS DE NAVEGACIÓN ===
+        const moverAlSiguienteHorizontal = (input) => {
+            const fila = parseInt(input.dataset.fila);
+            const col = parseInt(input.dataset.col);
+            for (let c = col + 1; c < gridAncho; c++) {
+                const sig = document.querySelector(`#cruci-grid-10 .celda-input[data-fila="${fila}"][data-col="${c}"]`);
+                if (sig) { sig.focus(); return; }
+            }
+        };
+
+        const moverAlAnteriorHorizontal = (input) => {
+            const fila = parseInt(input.dataset.fila);
+            const col = parseInt(input.dataset.col);
+            for (let c = col - 1; c >= 0; c--) {
+                const ant = document.querySelector(`#cruci-grid-10 .celda-input[data-fila="${fila}"][data-col="${c}"]`);
+                if (ant) { ant.focus(); return; }
+            }
+        };
+
+        const moverAlSiguienteVertical = (input) => {
+            const fila = parseInt(input.dataset.fila);
+            const col = parseInt(input.dataset.col);
+            for (let f = fila + 1; f < gridAlto; f++) {
+                const sig = document.querySelector(`#cruci-grid-10 .celda-input[data-fila="${f}"][data-col="${col}"]`);
+                if (sig) { sig.focus(); return; }
+            }
+        };
+
+        const moverAlAnteriorVertical = (input) => {
+            const fila = parseInt(input.dataset.fila);
+            const col = parseInt(input.dataset.col);
+            for (let f = fila - 1; f >= 0; f--) {
+                const ant = document.querySelector(`#cruci-grid-10 .celda-input[data-fila="${f}"][data-col="${col}"]`);
+                if (ant) { ant.focus(); return; }
+            }
+        };
+
+        const moverSiguiente = (input) => {
+            if (direccionActiva === 'horizontal') moverAlSiguienteHorizontal(input);
+            else moverAlSiguienteVertical(input);
+        };
+
+        const moverAnterior = (input) => {
+            if (direccionActiva === 'horizontal') moverAlAnteriorHorizontal(input);
+            else moverAlAnteriorVertical(input);
+        };
+
+        // === EVENTOS DE CADA INPUT ===
+        inputs.forEach(input => {
+            // Auto-avance al escribir
             input.addEventListener('input', (e) => {
-                e.target.value = e.target.value.toUpperCase();
-                if (e.target.value && i < inputs.length - 1) inputs[i + 1].focus();
+                const v = e.target.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÑ]/g, '');
+                e.target.value = v.slice(-1);
+
+                if (e.target.value) {
+                    this.verificarPalabrasCruci(palabras, inputs);
+                    moverSiguiente(input);
+                }
             });
+
+            // Navegación con teclado
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && i > 0) inputs[i - 1].focus();
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    direccionActiva = 'horizontal';
+                    moverAlSiguienteHorizontal(input);
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    direccionActiva = 'horizontal';
+                    moverAlAnteriorHorizontal(input);
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    direccionActiva = 'vertical';
+                    moverAlSiguienteVertical(input);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    direccionActiva = 'vertical';
+                    moverAlAnteriorVertical(input);
+                } else if (e.key === 'Backspace') {
+                    if (input.value) {
+                        input.value = '';
+                        e.preventDefault();
+                        this.verificarPalabrasCruci(palabras, inputs);
+                    } else {
+                        e.preventDefault();
+                        moverAnterior(input);
+                        setTimeout(() => {
+                            if (document.activeElement && document.activeElement.classList.contains('celda-input')) {
+                                document.activeElement.value = '';
+                                this.verificarPalabrasCruci(palabras, inputs);
+                            }
+                        }, 10);
+                    }
+                } else if (e.key === 'Delete') {
+                    input.value = '';
+                    this.verificarPalabrasCruci(palabras, inputs);
+                } else if (e.key === 'Tab') {
+                    e.preventDefault();
+                    moverSiguiente(input);
+                }
+            });
+
+            // Detectar dirección al enfocar y resaltar pista activa
+            input.addEventListener('focus', (e) => {
+                const fila = parseInt(e.target.dataset.fila);
+                const col = parseInt(e.target.dataset.col);
+
+                const palabraHorizontal = palabras.find(p =>
+                    p.direccion === 'horizontal' &&
+                    p.fila === fila &&
+                    col >= p.col &&
+                    col < p.col + p.palabra.length
+                );
+
+                direccionActiva = palabraHorizontal ? 'horizontal' : 'vertical';
+
+                // Resaltar pista activa
+                document.querySelectorAll('.pista-item').forEach(el => el.classList.remove('activa'));
+                const palabraActiva = palabras.find(p => {
+                    if (p.direccion !== direccionActiva) return false;
+                    if (direccionActiva === 'horizontal') {
+                        return p.fila === fila && col >= p.col && col < p.col + p.palabra.length;
+                    } else {
+                        return p.col === col && fila >= p.fila && fila < p.fila + p.palabra.length;
+                    }
+                });
+                if (palabraActiva) {
+                    const pistaEl = document.querySelector(`.pista-item[data-palabra="${palabraActiva.numero}"]`);
+                    if (pistaEl) pistaEl.classList.add('activa');
+                }
             });
         });
 
-        document.getElementById('btn-verificar-cruci').addEventListener('click', () => {
-            const ing = Array.from(inputs).map(i => i.value.toUpperCase()).join('');
-            if (ing === palabra) {
-                inputs.forEach(i => i.parentElement.classList.add('resuelta'));
-                this.siguienteFase(50);
-            } else {
-                inputs.forEach(i => {
-                    i.parentElement.classList.add('incorrecta');
-                    setTimeout(() => i.parentElement.classList.remove('incorrecta'), 1200);
+        // Clic en pista para activar palabra
+        document.querySelectorAll('.pista-item').forEach(pista => {
+            pista.addEventListener('click', () => {
+                const numPalabra = parseInt(pista.dataset.palabra);
+                const palabra = palabras.find(p => p.numero === numPalabra);
+                if (!palabra) return;
+
+                const input = document.querySelector(`#cruci-grid-10 .celda-input[data-fila="${palabra.fila}"][data-col="${palabra.col}"]`);
+                if (input) input.focus();
+            });
+        });
+
+        // Botón verificar
+        const btnVerificar = document.getElementById('btn-verificar-cruci');
+        if (btnVerificar) {
+            btnVerificar.addEventListener('click', () => {
+                let errores = 0;
+                palabras.forEach(palabra => {
+                    let actual = '';
+                    for (let i = 0; i < palabra.palabra.length; i++) {
+                        let f = palabra.fila;
+                        let c = palabra.col;
+                        if (palabra.direccion === 'horizontal') c += i;
+                        else f += i;
+                        const input = document.querySelector(`#cruci-grid-10 .celda-input[data-fila="${f}"][data-col="${c}"]`);
+                        if (input) actual += input.value.toUpperCase();
+                    }
+                    if (actual === palabra.palabra) {
+                        for (let i = 0; i < palabra.palabra.length; i++) {
+                            let f = palabra.fila;
+                            let c = palabra.col;
+                            if (palabra.direccion === 'horizontal') c += i;
+                            else f += i;
+                            const celda = document.querySelector(`#cruci-grid-10 .celda-crucigrama[data-fila="${f}"][data-col="${c}"]`);
+                            if (celda) celda.classList.add('resuelta');
+                        }
+                    } else if (actual.length === palabra.palabra.length) {
+                        errores++;
+                    }
                 });
-                this.perderVida();
+
+                if (errores > 0) {
+                    this.cruciIntentosFallidos += errores;
+                    const fallosEl = document.getElementById('cruci-fallos');
+
+                    while (this.cruciIntentosFallidos >= this.cruciERRORES_POR_VIDA) {
+                        this.cruciIntentosFallidos -= this.cruciERRORES_POR_VIDA;
+                        this.perderVida();
+                    }
+
+                    if (fallosEl) fallosEl.textContent = this.cruciIntentosFallidos;
+                }
+
+                const totalResueltas = document.querySelectorAll('#cruci-grid-10 .celda-crucigrama.resuelta').length;
+                const totalBlancas = document.querySelectorAll('#cruci-grid-10 .celda-crucigrama.blanca').length;
+                if (totalBlancas === totalResueltas) {
+                    this.siguienteFase(50);
+                }
+            });
+        }
+    }
+
+    verificarPalabrasCruci(palabras, inputs) {
+        palabras.forEach(palabra => {
+            let actual = '';
+            for (let i = 0; i < palabra.palabra.length; i++) {
+                let f = palabra.fila;
+                let c = palabra.col;
+                if (palabra.direccion === 'horizontal') c += i;
+                else f += i;
+                const input = document.querySelector(`#cruci-grid-10 .celda-input[data-fila="${f}"][data-col="${c}"]`);
+                if (input) actual += input.value.toUpperCase();
+            }
+            if (actual === palabra.palabra) {
+                for (let i = 0; i < palabra.palabra.length; i++) {
+                    let f = palabra.fila;
+                    let c = palabra.col;
+                    if (palabra.direccion === 'horizontal') c += i;
+                    else f += i;
+                    const celda = document.querySelector(`#cruci-grid-10 .celda-crucigrama[data-fila="${f}"][data-col="${c}"]`);
+                    if (celda) celda.classList.add('resuelta');
+                }
             }
         });
     }
 
-    // FASE 6: FRASE FINAL
+    // ============================================================
+    // FASE 6: FRASE FINAL (1 error = 1 vida)
+    // ============================================================
     renderFraseFinal(contenedor, reto) {
         contenedor.innerHTML = `
             <div class="mezcla-fase">
@@ -391,7 +700,9 @@ class PuzzleMezclaFinal {
         });
     }
 
+    // ============================================================
     // UTILIDADES
+    // ============================================================
     async perderVida(callback) {
         try {
             const r = await fetch('/api/perder_vida', { method: 'POST' });

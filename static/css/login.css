@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - LOGIN Y REGISTRO
+   MUNDO CUENTO - LOGIN Y REGISTRO
    ============================================================ */
 
 .pantalla-auth {
@@ -50,14 +50,35 @@
 }
 
 .logo-auth h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
+    color: var(--color-secundario);
+    margin-bottom: var(--espaciado-xs);
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaciado-sm);
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    text-shadow: 0 0 30px rgba(34, 211, 238, 0.4);
+}
+
+/* Los emojis mantienen su color natural */
+.logo-auth h1 .emoji {
+    font-size: 2rem;
+    display: inline-block;
+    line-height: 1;
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.5));
+    animation: pulse 3s ease-in-out infinite;
+}
+
+.logo-auth h1 .texto-logo {
     background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: var(--espaciado-xs);
-    letter-spacing: -0.03em;
+    font-weight: 800;
 }
 
 .logo-auth .subtitulo {
@@ -136,24 +157,26 @@
     width: 100%;
 }
 
-/* Icono decorativo del cerebro */
+/* Icono decorativo del mundo y libro */
 .icono-decorativo {
     position: absolute;
-    font-size: 8rem;
-    opacity: 0.03;
+    font-size: 4.5rem;
+    opacity: 0.15;
     pointer-events: none;
     user-select: none;
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.5));
+    z-index: 0;
 }
 
 .icono-decorativo.arriba-derecha {
-    top: -20px;
-    right: -20px;
+    top: 15px;
+    right: 15px;
     transform: rotate(15deg);
 }
 
 .icono-decorativo.abajo-izquierda {
-    bottom: -30px;
-    left: -30px;
+    bottom: 15px;
+    left: 15px;
     transform: rotate(-15deg);
 }
 
@@ -164,10 +187,15 @@
     }
 
     .logo-auth h1 {
-        font-size: 2rem;
+        font-size: 1.6rem;
+        gap: var(--espaciado-xs);
+    }
+
+    .logo-auth h1 .emoji {
+        font-size: 1.5rem;
     }
 
     .icono-decorativo {
-        font-size: 5rem;
+        font-size: 3.5rem;
     }
 }

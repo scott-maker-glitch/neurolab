@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroLab - ¡Nivel {{ nivel.nivel }} completado!</title>
+    <title>Mundo Cuento - ¡Nivel {{ nivel.nivel }} completado!</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/recompensa.css') }}">
 </head>
@@ -33,6 +33,7 @@
                 <span class="cm-cantidad">+{{ cm_nivel }} CM</span>
                 <span class="cm-etiqueta">en este nivel</span>
             </div>
+
             <!-- Barra de progreso con vaquita -->
             <div class="barra-progreso-recompensa">
                 <div class="barra-progreso-relleno" style="width: {{ porcentaje_progreso }}%;"></div>
