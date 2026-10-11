@@ -20,6 +20,16 @@
                 <a href="{{ url_for('logout') }}" class="boton-salir">Cerrar sesión</a>
             </header>
 
+            {% if sin_vidas %}
+            <div class="aviso-sin-vidas" id="aviso-sin-vidas">
+                <span style="font-size: 1.5rem;">💔</span>
+                <div>
+                    <strong>Sin vidas.</strong>
+                    Próxima vida en <span id="contador-menu">...</span> segundos.
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Estadísticas -->
             <div class="estadisticas">
                 <div class="tarjeta-stat stat-cm">
@@ -39,15 +49,18 @@
                 </div>
             </div>
 
-            <!-- Barra de progreso -->
-            <div class="barra-progreso">
-                <div class="barra-progreso-relleno" style="width: {{ porcentaje_progreso }}%;"></div>
-            </div>
-            <div class="barra-info">
-                <span>Progreso: {{ porcentaje_progreso }}%</span>
-                <span>{{ progreso.cm_total }} / {{ cm_maximo }} CM</span>
-            </div>
-
+           <!-- Barra de progreso con vaquita astronauta -->
+<div class="barra-progreso-contenedor">
+    <div class="barra-progreso">
+        <div class="barra-progreso-relleno" style="width: {{ porcentaje_progreso }}%;"></div>
+        <div class="vaquita-progreso" style="left: {{ porcentaje_progreso }}%;">
+            <img src="{{ url_for('static', filename='img/vaquita_astronauta.png') }}" alt="Vaquita astronauta">
+    </div>
+</div>
+<div class="barra-info">
+    <span>Progreso: {{ porcentaje_progreso }}%</span>
+    <span>{{ progreso.cm_total }} / {{ cm_maximo }} CM</span>
+</div>
             <!-- Título de sección -->
             <h2 class="titulo-seccion">Camino de progreso</h2>
 
@@ -93,5 +106,41 @@
 
         </div>
     </div>
+<script>
+    // Brinco de la vaquita al cargar (si el usuario acaba de completar un nivel)
+    document.addEventListener('DOMContentLoaded', () => {
+        const vaquita = document.querySelector('.vaquita-progreso');
+        if (vaquita) {
+            // Brincar cada 4 segundos
+            setInterval(() => {
+                vaquita.classList.add('brincar');
+                setTimeout(() => {
+                    vaquita.classList.remove('brincar');
+                }, 600);
+            }, 4000);
+        }
+    });
+</script>  
+{% if sin_vidas %}
+<script>
+    let segundosMenu = {{ progreso.segundos_para_vida }};
+
+    function actualizarContadorMenu() {
+        const contador = document.getElementById('contador-menu');
+        if (!contador) return;
+
+        if (segundosMenu > 0) {
+            contador.textContent = segundosMenu;
+            segundosMenu--;
+        } else {
+            contador.textContent = '0';
+            setTimeout(() => window.location.reload(), 1500);
+        }
+    }
+
+    setInterval(actualizarContadorMenu, 1000);
+    actualizarContadorMenu();
+</script>
+{% endif %}  
 </body>
 </html>

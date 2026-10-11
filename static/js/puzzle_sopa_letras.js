@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: SOPA DE LETRAS
+   NEUROLAB - PUZZLE: SOPA DE LETRAS (v2 - con touch móvil)
    ============================================================ */
 
 class PuzzleSopaLetras {
@@ -17,30 +17,23 @@ class PuzzleSopaLetras {
         this.palabrasEncontradas = new Set();
         this.temporizador = null;
 
-        // Estado de selección
         this.seleccionando = false;
         this.celdaInicio = null;
         this.celdaFin = null;
         this.celdasSeleccionadas = [];
 
-        // Grid generado
         this.grid = [];
-        this.posicionesPalabras = {}; // { "VENECIA": [{fila, col}, ...] }
+        this.posicionesPalabras = {};
 
         this.generarGrid();
         this.inicializarUI();
     }
 
-    // ============================================================
-    // GENERACIÓN DEL GRID
-    // ============================================================
     generarGrid() {
-        // Crear grid vacío
         this.grid = Array(this.gridSize).fill(null).map(() =>
             Array(this.gridSize).fill('')
         );
 
-        // Intentar colocar cada palabra
         this.palabras.forEach(palabra => {
             let colocada = false;
             let intentos = 0;
@@ -57,7 +50,6 @@ class PuzzleSopaLetras {
             }
         });
 
-        // Rellenar huecos con letras aleatorias
         const letras = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
         for (let i = 0; i < this.gridSize; i++) {
             for (let j = 0; j < this.gridSize; j++) {
@@ -79,16 +71,12 @@ class PuzzleSopaLetras {
             if (direccion === 'horizontal') c = col + i;
             else if (direccion === 'vertical') f = fila + i;
 
-            // Fuera de límites
             if (f >= this.gridSize || c >= this.gridSize) return null;
-
-            // Choca con otra letra distinta
             if (this.grid[f][c] && this.grid[f][c] !== palabra[i]) return null;
 
             celdas.push({ fila: f, col: c });
         }
 
-        // Colocar la palabra
         celdas.forEach((celda, i) => {
             this.grid[celda.fila][celda.col] = palabra[i];
         });
@@ -96,9 +84,6 @@ class PuzzleSopaLetras {
         return celdas;
     }
 
-    // ============================================================
-    // UI
-    // ============================================================
     inicializarUI() {
         const contenedor = document.getElementById('contenedor-puzzle');
         contenedor.innerHTML = `
@@ -128,7 +113,8 @@ class PuzzleSopaLetras {
 
         this.renderizarGrid();
         this.configurarEventos();
-        this.iniciarTemporizador();
+        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
+        // this.iniciarTemporizador();
     }
 
     renderizarGrid() {
@@ -150,30 +136,54 @@ class PuzzleSopaLetras {
         grid.addEventListener('mouseover', (e) => this.extenderSeleccion(e));
         document.addEventListener('mouseup', () => this.terminarSeleccion());
 
-        // Touch (móvil)
+        // Touch móvil — usar passive: false para poder hacer preventDefault
         grid.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            this.iniciarSeleccion(e.touches[0]);
-        });
+            const touch = e.touches[0];
+            this.iniciarSeleccionDesdeTouch(touch);
+        }, { passive: false });
+
         grid.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            this.extenderSeleccion(e.touches[0]);
-        });
+            const touch = e.touches[0];
+            this.extenderSeleccionDesdeTouch(touch);
+        }, { passive: false });
+
         grid.addEventListener('touchend', (e) => {
             e.preventDefault();
             this.terminarSeleccion();
-        });
+        }, { passive: false });
+
+        grid.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            this.limpiarSeleccion();
+            this.seleccionando = false;
+        }, { passive: false });
     }
 
-    obtenerCelda(target) {
-        if (!target || !target.classList || !target.classList.contains('celda-sopa')) return null;
-        const fila = parseInt(target.dataset.fila);
-        const col = parseInt(target.dataset.col);
-        return { fila, col, elemento: target };
+    // ============================================================
+    // HELPERS PARA OBTENER CELDA (mouse o touch)
+    // ============================================================
+    obtenerCeldaPorElemento(elemento) {
+        if (!elemento || !elemento.classList) return null;
+        if (!elemento.classList.contains('celda-sopa')) return null;
+        return {
+            fila: parseInt(elemento.dataset.fila),
+            col: parseInt(elemento.dataset.col),
+            elemento: elemento
+        };
     }
 
+    obtenerCeldaPorTouch(touch) {
+        const elemento = document.elementFromPoint(touch.clientX, touch.clientY);
+        return this.obtenerCeldaPorElemento(elemento);
+    }
+
+    // ============================================================
+    // SELECCIÓN CON MOUSE
+    // ============================================================
     iniciarSeleccion(e) {
-        const celda = this.obtenerCelda(e.target);
+        const celda = this.obtenerCeldaPorElemento(e.target);
         if (!celda) return;
 
         this.seleccionando = true;
@@ -185,14 +195,40 @@ class PuzzleSopaLetras {
 
     extenderSeleccion(e) {
         if (!this.seleccionando) return;
-        const celda = this.obtenerCelda(e.target);
+        const celda = this.obtenerCeldaPorElemento(e.target);
+        if (!celda) return;
+        this.extenderHastaCelda(celda);
+    }
+
+    // ============================================================
+    // SELECCIÓN CON TOUCH
+    // ============================================================
+    iniciarSeleccionDesdeTouch(touch) {
+        const celda = this.obtenerCeldaPorTouch(touch);
         if (!celda) return;
 
-        // Solo permitir línea recta (horizontal o vertical)
+        this.seleccionando = true;
+        this.celdaInicio = celda;
+        this.celdaFin = celda;
+        this.celdasSeleccionadas = [celda];
+        this.actualizarSeleccionVisual();
+    }
+
+    extenderSeleccionDesdeTouch(touch) {
+        if (!this.seleccionando) return;
+        const celda = this.obtenerCeldaPorTouch(touch);
+        if (!celda) return;
+        this.extenderHastaCelda(celda);
+    }
+
+    // ============================================================
+    // LÓGICA COMÚN DE EXTENSIÓN
+    // ============================================================
+    extenderHastaCelda(celda) {
         const df = celda.fila - this.celdaInicio.fila;
         const dc = celda.col - this.celdaInicio.col;
 
-        if (df !== 0 && dc !== 0) return; // Diagonal no permitida
+        if (df !== 0 && dc !== 0) return; // Solo recto
         if (df === 0 && dc === 0) return;
 
         this.celdaFin = celda;
@@ -237,7 +273,6 @@ class PuzzleSopaLetras {
         const palabraSeleccionada = this.celdasSeleccionadas.map(c => this.grid[c.fila][c.col]).join('');
         const palabraInvertida = palabraSeleccionada.split('').reverse().join('');
 
-        // Buscar coincidencia
         const palabraEncontrada = this.palabras.find(p =>
             !this.palabrasEncontradas.has(p) && (p === palabraSeleccionada || p === palabraInvertida)
         );
@@ -252,44 +287,37 @@ class PuzzleSopaLetras {
     acierto(palabra) {
         this.palabrasEncontradas.add(palabra);
 
-        // Marcar celdas como encontradas
         this.celdasSeleccionadas.forEach(c => {
             c.elemento.classList.remove('seleccionada');
             c.elemento.classList.add('encontrada');
         });
 
-        // Marcar palabra en la lista
         const item = document.querySelector(`.palabra-item[data-palabra="${palabra}"]`);
         if (item) item.classList.add('encontrada');
 
-        // Sumar CM
         const cmPalabra = Math.floor(this.cmBase / this.palabras.length);
         this.cmAcumulado += cmPalabra;
         document.getElementById('cm-acumulado').textContent = `+${this.cmAcumulado} CM`;
 
-        // Actualizar progreso
         document.querySelector('.puzzle-progreso').textContent = `Palabras: ${this.palabrasEncontradas.size} / ${this.palabras.length}`;
         this.actualizarBarra();
 
         if (this.palabrasEncontradas.size >= this.palabras.length) {
             setTimeout(() => this.completarNivel(), 800);
         }
+
+        this.celdasSeleccionadas = [];
     }
 
     async fallo() {
+        // En la sopa de letras NO se pierden vidas. Solo se limpia la selección
+        // y se muestra un pequeño feedback visual.
         this.limpiarSeleccion();
 
-        try {
-            const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
-            const datos = await respuesta.json();
-            this.vidas = datos.vidas;
-            this.actualizarVidasUI();
-
-            if (this.vidas <= 0) {
-                setTimeout(() => this.derrota('Te quedaste sin vidas'), 500);
-            }
-        } catch (error) {
-            console.error('Error perdiendo vida:', error);
+        const grid = document.getElementById('sopa-grid');
+        if (grid) {
+            grid.classList.add('intento-fallido');
+            setTimeout(() => grid.classList.remove('intento-fallido'), 400);
         }
     }
 
@@ -356,7 +384,7 @@ class PuzzleSopaLetras {
 
     derrota(motivo) {
         clearInterval(this.temporizador);
-        const contenedor = document.getElementById('puzzle-contenido');
+        const contenedor = document.getElementById('contenedor-puzzle');
         if (contenedor) {
             contenedor.innerHTML = `
                 <div class="puzzle-derrota">
@@ -371,10 +399,9 @@ class PuzzleSopaLetras {
     }
 }
 
-// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     if (window.DATOS_NIVEL && window.DATOS_NIVEL.tipo_puzzle === 'sopa_de_letras') {
-        new PuzzleSopaLetras(window.DATOS_NIVEL, {
+        window.puzzleInstance = new PuzzleSopaLetras(window.DATOS_NIVEL, {
             vidasIniciales: window.VIDAS_INICIALES
         });
     }

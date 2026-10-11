@@ -39,7 +39,7 @@ def crear_base_de_datos():
             nivel_actual INTEGER DEFAULT 1,
             cm_total INTEGER DEFAULT 0,
             titulo_actual TEXT DEFAULT 'Novato',
-            vidas INTEGER DEFAULT 3,
+            vidas INTEGER DEFAULT 5,
             ultima_perdida_vida TIMESTAMP,
             fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (usuario_id) REFERENCES usuarios (id)

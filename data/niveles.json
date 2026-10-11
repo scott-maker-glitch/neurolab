@@ -1,7 +1,7 @@
 {
   "configuracion_global": {
-    "vidas_iniciales": 3,
-    "tiempo_regeneracion_vida_segundos": 180,
+    "vidas_iniciales": 5,
+    "tiempo_regeneracion_vida_segundos": 60,
     "cm_por_titulo": {
       "nivel_3": "Aprendiz Mental",
       "nivel_6": "Analista Cognitivo",
@@ -110,75 +110,21 @@
       "insignia": "🥁 Tambor de Nicolasín",
       "titulo_desbloqueado": null,
       "puzzle": {
-      "grid_ancho": 10,
-      "grid_alto": 10,
-      "palabras": [
-    {
-      "numero": 1,
-      "palabra": "TAMBOR",
-      "pista": "Instrumento que Nicolasín tocaba con amor",
-      "direccion": "horizontal",
-      "fila": 0,
-      "col": 0
-    },
-    {
-      "numero": 2,
-      "palabra": "RUSIA",
-      "pista": "Patria que defendían los soldados",
-      "direccion": "vertical",
-      "fila": 0,
-      "col": 2
-    },
-    {
-      "numero": 3,
-      "palabra": "SANGRE",
-      "pista": "Lo que cubría a Nicolás al llegar a la ambulancia",
-      "direccion": "horizontal",
-      "fila": 3,
-      "col": 2
-    },
-    {
-      "numero": 4,
-      "palabra": "SCHNAPS",
-      "pista": "Bebida que la matuschka guardaba en su tonel",
-      "direccion": "vertical",
-      "fila": 3,
-      "col": 6
-    },
-    {
-      "numero": 5,
-      "palabra": "NEVADA",
-      "pista": "Fenómeno que comenzó muy entrada la noche",
-      "direccion": "horizontal",
-      "fila": 5,
-      "col": 4
-    },
-    {
-      "numero": 6,
-      "palabra": "LOBA",
-      "pista": "Animal con el que comparan el llanto de la matuschka",
-      "direccion": "vertical",
-      "fila": 5,
-      "col": 8
-    },
-    {
-      "numero": 7,
-      "palabra": "MATUSCHKA",
-      "pista": "Nombre con que los soldados llamaban a la anciana del regimiento",
-      "direccion": "horizontal",
-      "fila": 8,
-      "col": 0
-    },
-    {
-      "numero": 8,
-      "palabra": "NICOLASIN",
-      "pista": "El tambor más joven y querido del regimiento",
-      "direccion": "vertical",
-      "fila": 8,
-      "col": 5
-    }
-  ]
-}
+        "grid_ancho": 12,
+        "grid_alto": 13,
+        "palabras": [
+          { "numero": 1, "palabra": "MATUSCHKA", "pista": "Nombre con que los soldados llamaban a la anciana del regimiento", "direccion": "horizontal", "fila": 1, "col": 1 },
+          { "numero": 2, "palabra": "RUSIA", "pista": "Patria que defendían los soldados", "direccion": "horizontal", "fila": 3, "col": 0 },
+          { "numero": 3, "palabra": "TAMBOR", "pista": "Instrumento que Nicolasín tocaba con amor", "direccion": "horizontal", "fila": 5, "col": 0 },
+          { "numero": 4, "palabra": "NICOLASIN", "pista": "El tambor más joven y querido del regimiento", "direccion": "horizontal", "fila": 8, "col": 0 },
+          { "numero": 5, "palabra": "BANDERA", "pista": "Símbolo que ondeaba sobre las lanzas en los combates", "direccion": "horizontal", "fila": 10, "col": 4 },
+          { "numero": 6, "palabra": "LAZARENKO", "pista": "El cirujano calvo y forzudo que atendía a los heridos", "direccion": "horizontal", "fila": 11, "col": 1 },
+          { "numero": 7, "palabra": "AMBULANCIA", "pista": "Lugar donde estaba el narrador herido", "direccion": "vertical", "fila": 0, "col": 1 },
+          { "numero": 8, "palabra": "SANGRE", "pista": "Lo que cubría a Nicolás al llegar a la ambulancia", "direccion": "vertical", "fila": 0, "col": 9 },
+          { "numero": 9, "palabra": "HUESO", "pista": "Parte del cuerpo que la bala rompió al narrador", "direccion": "vertical", "fila": 1, "col": 7 },
+          { "numero": 10, "palabra": "LOBA", "pista": "Animal con el que comparan el llanto de la matuschka", "direccion": "vertical", "fila": 8, "col": 4 }
+        ]
+      }
     },
     {
       "nivel": 6,
@@ -193,13 +139,13 @@
       "titulo_desbloqueado": "Analista Cognitivo",
       "puzzle": {
         "frases": [
-          { "texto": "El equipo favorito de él es ___.", "respuesta": "Inglaterra" },
-          { "texto": "Su comida favorita son los chiles en ___.", "respuesta": "nogada" },
-          { "texto": "Odia el café sin ___.", "respuesta": "azúcar" },
-          { "texto": "Cuando está enojado se le nota la ___.", "respuesta": "yugular" },
-          { "texto": "En el paso 4, lo único que debes conservar es el peluche de ___.", "respuesta": "elefante" },
-          { "texto": "El paso 7 dice que fallarás en todas las anteriores cuando lo veas con otra ___.", "respuesta": "chica" },
-          { "texto": "Al final, el corazón se rompe como las ___ de la escuela.", "respuesta": "ventanas" }
+          { "texto": "El equipo favorito de él es ___.", "respuesta": "Inglaterra", "opciones": ["Inglaterra", "Francia", "Brasil", "Alemania"] },
+          { "texto": "Su comida favorita son los chiles en ___.", "respuesta": "nogada", "opciones": ["nogada", "salsa", "adobo", "mole"] },
+          { "texto": "Odia el café sin ___.", "respuesta": "azúcar", "opciones": ["azúcar", "leche", "canela", "crema"] },
+          { "texto": "Cuando está enojado se le nota la ___.", "respuesta": "yugular", "opciones": ["yugular", "vena", "frente", "mirada"] },
+          { "texto": "En el paso 4, lo único que debes conservar es el peluche de ___.", "respuesta": "elefante", "opciones": ["elefante", "gallina", "oso", "tigre"] },
+          { "texto": "El paso 7 dice que fallarás en todas las anteriores cuando lo veas con otra ___.", "respuesta": "chica", "opciones": ["chica", "amiga", "persona", "mujer"] },
+          { "texto": "Al final, el corazón se rompe como las ___ de la escuela.", "respuesta": "ventanas", "opciones": ["ventanas", "puertas", "paredes", "bancas"] }
         ]
       }
     },
@@ -217,7 +163,7 @@
       "puzzle": {
         "palabras": ["GARCIN", "PAJARO", "AZUL", "CEREBRO", "JAULA", "LIBERTAD", "PARIS", "AJENJO", "NINI", "VIOLETAS", "POETA"],
         "grid_size": 15,
-        "direcciones": ["horizontal", "vertical", "diagonal"]
+        "direcciones": ["horizontal", "vertical"]
       }
     },
     {
@@ -315,6 +261,6 @@
           }
         ]
       }
-    } 
+    }
   ]
-}  
+}

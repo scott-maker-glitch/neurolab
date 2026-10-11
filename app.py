@@ -22,6 +22,9 @@ DB_PATH = "database.db"
 NIVELES_PATH = os.path.join("data", "niveles.json")
 LECTURAS_PATH = os.path.join("data", "lecturas")
 
+VIDAS_MAXIMAS = 5
+TIEMPO_REGENERACION_SEGUNDOS = 60
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -97,20 +100,35 @@ def obtener_progreso(usuario_id):
 
     progreso = dict(progreso)
 
-    # Regeneración de vidas
-    if progreso["vidas"] < 3 and progreso["ultima_perdida_vida"]:
+    # Inicializar el campo de segundos restantes (por defecto 0)
+    progreso["segundos_para_vida"] = 0
+
+    # Regeneración de vidas (1 minuto por vida, máximo 5)
+    if progreso["vidas"] < VIDAS_MAXIMAS and progreso["ultima_perdida_vida"]:
         ultima = datetime.fromisoformat(progreso["ultima_perdida_vida"])
         ahora = datetime.now()
-        minutos_pasados = (ahora - ultima).total_seconds() / 60
-        vidas_recuperadas = int(minutos_pasados // 3)  # 3 minutos por vida
+        segundos_pasados = (ahora - ultima).total_seconds()
+        vidas_recuperadas = int(segundos_pasados // TIEMPO_REGENERACION_SEGUNDOS)
+
         if vidas_recuperadas > 0:
-            nuevas_vidas = min(3, progreso["vidas"] + vidas_recuperadas)
+            nuevas_vidas = min(VIDAS_MAXIMAS, progreso["vidas"] + vidas_recuperadas)
+
+            if nuevas_vidas >= VIDAS_MAXIMAS:
+                nuevo_timestamp = None
+            else:
+                nuevo_timestamp = (ultima + timedelta(seconds=vidas_recuperadas * TIEMPO_REGENERACION_SEGUNDOS)).isoformat()
+
             cursor.execute(
                 "UPDATE progreso SET vidas = ?, ultima_perdida_vida = ? WHERE usuario_id = ?",
-                (nuevas_vidas, ahora.isoformat() if nuevas_vidas < 3 else None, usuario_id)
+                (nuevas_vidas, nuevo_timestamp, usuario_id)
             )
             conexion.commit()
             progreso["vidas"] = nuevas_vidas
+            progreso["ultima_perdida_vida"] = nuevo_timestamp
+        else:
+            # No se recuperó vida todavía: calcular cuántos segundos faltan
+            segundos_restantes = TIEMPO_REGENERACION_SEGUNDOS - (segundos_pasados % TIEMPO_REGENERACION_SEGUNDOS)
+            progreso["segundos_para_vida"] = int(segundos_restantes)
 
     conexion.close()
     return progreso
@@ -153,8 +171,8 @@ def registro():
         usuario_id = cursor.lastrowid
 
         cursor.execute(
-            "INSERT INTO progreso (usuario_id, nivel_actual, cm_total, vidas, titulo_actual) VALUES (?, 1, 0, 3, 'Novato')",
-            (usuario_id,)
+            "INSERT INTO progreso (usuario_id, nivel_actual, cm_total, vidas, titulo_actual) VALUES (?, 1, 0, ?, 'Novato')",
+            (usuario_id, VIDAS_MAXIMAS)
         )
 
         conexion.commit()
@@ -212,7 +230,8 @@ def menu():
         total_niveles=len(niveles_data["niveles"]),
         niveles=niveles_data["niveles"],
         cm_maximo=cm_maximo,
-        porcentaje_progreso=porcentaje_progreso
+        porcentaje_progreso=porcentaje_progreso,
+        sin_vidas=(progreso["vidas"] <= 0)
     )
 
 @app.route("/nivel/<int:num_nivel>")
@@ -227,6 +246,10 @@ def nivel(num_nivel):
     if num_nivel > progreso["nivel_actual"]:
         return redirect(url_for("menu"))
 
+    # ⚠️ Si no tiene vidas, no puede jugar
+    if progreso["vidas"] <= 0:
+        return render_template("sin_vidas.html", progreso=progreso)
+
     datos_nivel = niveles_data["niveles"][num_nivel - 1]
     lectura = cargar_lectura(datos_nivel["archivo_lectura"])
 
@@ -236,6 +259,18 @@ def nivel(num_nivel):
         lectura=lectura,
         progreso=progreso
     )
+
+@app.route("/api/estado_vidas")
+@login_required
+def estado_vidas():
+    """Devuelve el estado actual de las vidas del usuario (para el contador en vivo)."""
+    progreso = obtener_progreso(current_user.id)
+    return jsonify({
+        "vidas": progreso["vidas"],
+        "vidas_maximas": VIDAS_MAXIMAS,
+        "segundos_para_vida": progreso["segundos_para_vida"],
+        "sin_vidas": progreso["vidas"] <= 0
+    })
 
 @app.route("/api/validar_respuesta", methods=["POST"])
 @login_required
@@ -301,10 +336,14 @@ def perder_vida():
         )
         conexion.commit()
         conexion.close()
-        return jsonify({"vidas": nuevas_vidas, "mensaje": "Vida perdida"})
+        return jsonify({
+            "vidas": nuevas_vidas,
+            "mensaje": "Vida perdida",
+            "sin_vidas": nuevas_vidas <= 0
+        })
 
     conexion.close()
-    return jsonify({"vidas": 0, "mensaje": "Sin vidas disponibles"})
+    return jsonify({"vidas": 0, "mensaje": "Sin vidas disponibles", "sin_vidas": True})
 
 @app.route("/api/completar_nivel", methods=["POST"])
 @login_required
@@ -322,7 +361,6 @@ def completar_nivel():
     conexion = get_db()
     cursor = conexion.cursor()
 
-    # Verificar si ya estaba completado
     cursor.execute(
         "SELECT id FROM niveles_completados WHERE usuario_id = ? AND nivel = ?",
         (current_user.id, num_nivel)
@@ -338,13 +376,11 @@ def completar_nivel():
     else:
         print(f"[DEBUG] Nivel {num_nivel} ya estaba completado, sumando CM igual")
 
-    # SIEMPRE actualizar CM y nivel_actual (aunque ya estuviera completado)
     cursor.execute(
         "UPDATE progreso SET cm_total = cm_total + ?, nivel_actual = ? WHERE usuario_id = ?",
         (cm_obtenido, num_nivel + 1, current_user.id)
     )
 
-    # Actualizar título si corresponde
     if datos_nivel.get("titulo_desbloqueado"):
         cursor.execute(
             "UPDATE progreso SET titulo_actual = ? WHERE usuario_id = ?",
@@ -367,13 +403,11 @@ def recompensa(num_nivel):
     niveles_data = cargar_niveles()
     datos_nivel = niveles_data["niveles"][num_nivel - 1]
 
-    # Forzar lectura fresca del progreso (sin caché)
     conexion = get_db()
     cursor = conexion.cursor()
     cursor.execute("SELECT * FROM progreso WHERE usuario_id = ?", (current_user.id,))
     progreso = dict(cursor.fetchone())
 
-    # Buscar CM obtenido en este nivel específico
     cursor.execute(
         "SELECT cm_obtenido FROM niveles_completados WHERE usuario_id = ? AND nivel = ?",
         (current_user.id, num_nivel)
@@ -383,11 +417,17 @@ def recompensa(num_nivel):
 
     conexion.close()
 
+    # Calcular % de progreso
+    cm_maximo = sum(n["cm_base"] + n["cm_bonus_tiempo"] for n in niveles_data["niveles"])
+    porcentaje_progreso = int((progreso["cm_total"] / cm_maximo) * 100) if cm_maximo > 0 else 0
+
     return render_template(
         "recompensa.html",
         nivel=datos_nivel,
         progreso=progreso,
         cm_nivel=cm_nivel,
+        cm_maximo=cm_maximo,
+        porcentaje_progreso=porcentaje_progreso,
         nombre=current_user.nombre_usuario
     )
 
@@ -400,4 +440,4 @@ if __name__ == "__main__":
         print("⚠️  No existe la base de datos. Ejecuta primero: python init_db.py")
     else:
         print("🚀 Servidor iniciado en http://127.0.0.1:5000")
-        app.run(debug=True)
+        app.run(debug=True, host='0.0.0.0', port=5000)

@@ -33,6 +33,17 @@
                 <span class="cm-cantidad">+{{ cm_nivel }} CM</span>
                 <span class="cm-etiqueta">en este nivel</span>
             </div>
+            <!-- Barra de progreso con vaquita -->
+            <div class="barra-progreso-recompensa">
+                <div class="barra-progreso-relleno" style="width: {{ porcentaje_progreso }}%;"></div>
+                <div class="vaquita-recompensa" style="left: {{ porcentaje_progreso }}%;">
+                    <img src="{{ url_for('static', filename='img/vaquita_astronauta.png') }}" alt="Vaquita astronauta">
+                </div>
+            </div>
+            <div class="barra-info-recompensa">
+                <span>Progreso: {{ porcentaje_progreso }}%</span>
+                <span>{{ progreso.cm_total }} / {{ cm_maximo }} CM</span>
+            </div>
 
             <!-- Estadísticas -->
             <div class="estadisticas-recompensa">

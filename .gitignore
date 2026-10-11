@@ -1,0 +1,16 @@
+# Base de datos local (NO subir)
+database.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+
+# Ejecutables de ngrok (temporal)
+ngrok.exe
+
+# Sistema
+.DS_Store
+Thumbs.db

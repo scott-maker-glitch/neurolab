@@ -15,8 +15,8 @@ class PuzzleCompletarFrase {
         this.vidas = opciones.vidasIniciales;
         this.cmAcumulado = 0;
         this.errores = 0;
+        this.intentosFallidos = 0;
         this.bloqueado = false;
-        this.temporizador = null;
 
         this.inicializarUI();
     }
@@ -27,6 +27,7 @@ class PuzzleCompletarFrase {
             <div class="puzzle-completar">
                 <div class="puzzle-header">
                     <span class="puzzle-progreso">Frase ${this.indiceActual + 1} / ${this.frases.length}</span>
+                    <span class="puzzle-intentos" id="intentos-fallidos">Fallos: 0 / 2</span>
                     <span class="puzzle-cm" id="cm-acumulado">+${this.cmAcumulado} CM</span>
                 </div>
 
@@ -40,7 +41,8 @@ class PuzzleCompletarFrase {
 
         this.renderizarFrase();
         this.actualizarBarra();
-        this.iniciarTemporizador();
+        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
+        // this.iniciarTemporizador();
     }
 
     renderizarFrase() {
@@ -127,18 +129,31 @@ class PuzzleCompletarFrase {
         boton.classList.add('incorrecto');
         this.errores++;
 
-        try {
-            const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
-            const datos = await respuesta.json();
-            this.vidas = datos.vidas;
-            this.actualizarVidasUI();
+        // Sumar intento fallido
+        this.intentosFallidos++;
 
-            if (this.vidas <= 0) {
-                setTimeout(() => this.derrota('Te quedaste sin vidas'), 1000);
-                return;
+        // Actualizar contador en pantalla
+        const intentosEl = document.getElementById('intentos-fallidos');
+        if (intentosEl) intentosEl.textContent = `Fallos: ${this.intentosFallidos} / 2`;
+
+        // Cada 2 fallos, pierde 1 vida
+        if (this.intentosFallidos >= 2) {
+            this.intentosFallidos = 0;
+            if (intentosEl) intentosEl.textContent = `Fallos: 0 / 2`;
+
+            try {
+                const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
+                const datos = await respuesta.json();
+                this.vidas = datos.vidas;
+                this.actualizarVidasUI();
+
+                if (this.vidas <= 0) {
+                    setTimeout(() => this.derrota('Te quedaste sin vidas'), 1000);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error perdiendo vida:', error);
             }
-        } catch (error) {
-            console.error('Error perdiendo vida:', error);
         }
 
         const espacio = document.getElementById('espacio-blanco');
@@ -244,7 +259,7 @@ class PuzzleCompletarFrase {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (window.DATOS_NIVEL && window.DATOS_NIVEL.tipo_puzzle === 'completar_frase') {
-        new PuzzleCompletarFrase(window.DATOS_NIVEL, {
+        window.puzzleInstance = new PuzzleCompletarFrase(window.DATOS_NIVEL, {
             vidasIniciales: window.VIDAS_INICIALES
         });
     }

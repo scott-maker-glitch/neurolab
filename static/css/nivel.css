@@ -69,7 +69,7 @@
 }
 
 /* ============================================================
-   BARRA DE ESTADO (VIDAS + TIEMPO)
+   BARRA DE ESTADO (VIDAS + VAQUITA + TIEMPO)
    ============================================================ */
 .barra-estado {
     display: flex;
@@ -128,6 +128,50 @@
 }
 
 /* ============================================================
+   VAQUITA ASTRONAUTA EN PANTALLA DE NIVEL
+   ============================================================ */
+.vaquita-nivel {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: visible;
+    filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.6));
+    animation: glowNivel 2s ease-in-out infinite;
+}
+
+.vaquita-nivel img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    animation: flotarNivel 3s ease-in-out infinite,
+               escalaNivel 3s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes flotarNivel {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes glowNivel {
+    0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 18px rgba(139, 92, 246, 0.9));
+    }
+}
+
+@keyframes escalaNivel {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+}
+
+/* ============================================================
    TARJETA DE LECTURA
    ============================================================ */
 .tarjeta-lectura {
@@ -182,7 +226,6 @@
     margin-bottom: var(--espaciado-md);
 }
 
-/* Diálogos de los cuentos */
 .texto-lectura .dialogo {
     color: var(--color-secundario);
     font-style: italic;
@@ -300,36 +343,68 @@
     color: var(--color-texto);
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-    .header-nivel {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--espaciado-sm);
-    }
-
-    .info-nivel h1 {
-        font-size: 1.2rem;
-    }
-
-    .tarjeta-lectura {
-        padding: var(--espaciado-lg) var(--espaciado-md);
-    }
-
-    .texto-lectura {
-        font-size: 1rem;
-        line-height: 1.8;
-    }
-
-    .barra-estado {
-        flex-direction: column;
-        gap: var(--espaciado-sm);
-    }
+/* ============================================================
+   HEADER DE PUZZLES (común)
+   ============================================================ */
+.puzzle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--espaciado-md);
+    gap: var(--espaciado-sm);
+    flex-wrap: wrap;
 }
+
+.puzzle-progreso {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.puzzle-cm {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    color: var(--color-secundario);
+    font-weight: 700;
+}
+
+.puzzle-intentos {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    color: var(--color-advertencia);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--espaciado-xs) var(--espaciado-md);
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: var(--radio-full);
+    transition: all var(--transicion-media);
+}
+
+.barra-progreso-puzzle {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: var(--radio-full);
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: var(--espaciado-xl);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.barra-relleno {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
+    border-radius: var(--radio-full);
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
 /* ============================================================
    PUZZLE: COMPLETAR FRASE
    ============================================================ */
-
 .puzzle-completar {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -351,46 +426,6 @@
     background: linear-gradient(90deg, var(--color-primario), var(--color-secundario), var(--color-primario));
     background-size: 200% 100%;
     animation: gradienteMovil 3s linear infinite;
-}
-
-.puzzle-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--espaciado-md);
-}
-
-.puzzle-progreso {
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.85rem;
-    color: var(--color-texto-suave);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.puzzle-cm {
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.95rem;
-    color: var(--color-secundario);
-    font-weight: 700;
-}
-
-.barra-progreso-puzzle {
-    background: rgba(15, 23, 42, 0.6);
-    border-radius: var(--radio-full);
-    height: 8px;
-    overflow: hidden;
-    margin-bottom: var(--espaciado-xl);
-    border: 1px solid rgba(139, 92, 246, 0.15);
-}
-
-.barra-relleno {
-    height: 100%;
-    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
-    border-radius: var(--radio-full);
-    transition: width 0.5s ease;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
 }
 
 .frase-puzzle {
@@ -479,53 +514,9 @@
     animation: shakeError 0.4s ease;
 }
 
-/* Pantalla de derrota */
-.puzzle-derrota {
-    text-align: center;
-    padding: var(--espaciado-xl);
-    animation: fadeInUp 0.5s ease;
-}
-
-.derrota-icono {
-    font-size: 4rem;
-    margin-bottom: var(--espaciado-md);
-    animation: pulse 1s ease infinite;
-}
-
-.puzzle-derrota h2 {
-    color: var(--color-error);
-    margin-bottom: var(--espaciado-md);
-}
-
-.puzzle-derrota p {
-    color: var(--color-texto-suave);
-    margin-bottom: var(--espaciado-md);
-}
-
-.derrota-info {
-    font-weight: 700;
-    color: var(--color-texto);
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-    .opciones-puzzle {
-        grid-template-columns: 1fr;
-    }
-
-    .frase-texto {
-        font-size: 1.05rem;
-        padding: var(--espaciado-md);
-    }
-
-    .espacio-blanco {
-        min-width: 70px;
-    }
-}
 /* ============================================================
    PUZZLE: VERDADERO / FALSO
    ============================================================ */
-
 .puzzle-vf {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -647,30 +638,9 @@
     animation: pulse 0.6s ease;
 }
 
-/* Responsive */
-@media (max-width: 500px) {
-    .vf-botones {
-        grid-template-columns: 1fr;
-    }
-
-    .vf-texto {
-        font-size: 1.05rem;
-    }
-
-    .vf-boton {
-        padding: var(--espaciado-md);
-        flex-direction: row;
-        gap: var(--espaciado-md);
-    }
-
-    .vf-boton-icono {
-        font-size: 1.75rem;
-    }
-}
 /* ============================================================
    PUZZLE: SOPA DE LETRAS
    ============================================================ */
-
 .puzzle-sopa {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -701,7 +671,6 @@
     margin-top: var(--espaciado-md);
 }
 
-/* Grid de letras */
 .sopa-grid {
     display: grid;
     gap: 2px;
@@ -747,7 +716,17 @@
     box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
 }
 
-/* Lista de palabras */
+.sopa-grid.intento-fallido,
+.sopa-corta-grid.intento-fallido {
+    animation: shakeSopa 0.4s ease;
+}
+
+@keyframes shakeSopa {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 .sopa-palabras {
     background: rgba(15, 23, 42, 0.5);
     padding: var(--espaciado-md);
@@ -790,33 +769,9 @@
     opacity: 0.7;
 }
 
-/* Responsive */
-@media (max-width: 700px) {
-    .sopa-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .sopa-palabras {
-        order: -1;
-    }
-
-    #lista-palabras {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .palabra-item {
-        font-size: 0.75rem;
-    }
-
-    .celda-sopa {
-        font-size: 0.7rem;
-    }
-}
 /* ============================================================
    PUZZLE: MEMORAMA CONCEPTUAL
    ============================================================ */
-
 .puzzle-memorama {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -848,7 +803,6 @@
     perspective: 1000px;
 }
 
-/* Carta */
 .carta-memorama {
     aspect-ratio: 1;
     cursor: pointer;
@@ -893,10 +847,9 @@
     overflow: hidden;
 }
 
-/* Cara trasera (boca abajo) */
 .carta-atras {
     background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
-    color: white;
+    color: transparent;
     font-size: 2rem;
     font-weight: 800;
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -909,12 +862,6 @@
     opacity: 0.6;
 }
 
-/* Sobrescribir el ? con el cerebro */
-.carta-atras {
-    color: transparent;
-}
-
-/* Cara frontal (volteada) */
 .carta-frente {
     transform: rotateY(180deg);
     background: rgba(30, 41, 59, 0.95);
@@ -936,7 +883,6 @@
     font-weight: 500;
 }
 
-/* Carta encontrada (par correcto) */
 .carta-memorama.encontrada .carta-frente {
     background: linear-gradient(135deg, var(--color-exito), #059669);
     color: white;
@@ -944,7 +890,6 @@
     box-shadow: 0 0 20px rgba(52, 211, 153, 0.5);
 }
 
-/* Carta incorrecta */
 .carta-memorama.incorrecta .carta-frente {
     background: linear-gradient(135deg, var(--color-error), #dc2626);
     color: white;
@@ -952,34 +897,9 @@
     animation: shakeError 0.4s ease;
 }
 
-/* Responsive */
-@media (max-width: 700px) {
-    .memorama-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: var(--espaciado-sm);
-    }
-
-    .carta-cara {
-        font-size: 0.65rem;
-        padding: var(--espaciado-xs);
-    }
-
-    .carta-frente.es-termino {
-        font-size: 0.75rem;
-    }
-
-    .carta-frente.es-definicion {
-        font-size: 0.6rem;
-    }
-
-    .carta-atras::before {
-        font-size: 1.5rem;
-    }
-}
 /* ============================================================
    PUZZLE: CRUCIGRAMA
    ============================================================ */
-
 .puzzle-crucigrama {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -1029,6 +949,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 4px;
+    overflow: visible;
 }
 
 .celda-crucigrama.negra {
@@ -1036,13 +957,13 @@
 }
 
 .celda-crucigrama.blanca {
-    background: rgba(226, 232, 240, 0.95);
+    background: #e2e8f0;
     border: 1px solid rgba(100, 116, 139, 0.4);
     transition: all var(--transicion-rapida);
 }
 
 .celda-crucigrama.blanca.activa {
-    background: rgba(139, 92, 246, 0.4);
+    background: #c7b3ff;
     box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
 }
 
@@ -1051,49 +972,71 @@
     border-color: var(--color-exito);
 }
 
-.celda-crucigrama.blanca.resuelta .celda-input {
-    color: white;
-}
-
 .celda-crucigrama.blanca.incorrecta {
     background: linear-gradient(135deg, var(--color-error), #dc2626);
     animation: shakeError 0.4s ease;
-}
-
-.celda-crucigrama.blanca.incorrecta .celda-input {
-    color: white;
 }
 
 .celda-numero {
     position: absolute;
     top: 1px;
     left: 3px;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 700;
     color: #1e293b;
     pointer-events: none;
     font-family: 'Poppins', sans-serif;
+    z-index: 3;
 }
 
+/* ============================================================
+   INPUT DEL CRUCIGRAMA (LA CLAVE DEL PROBLEMA)
+   ============================================================ */
 .celda-input {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
     text-align: center;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #1e293b;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
     text-transform: uppercase;
-    padding: 0;
-    padding-top: 4px;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    z-index: 2;
+    caret-color: #8b5cf6;
+    box-sizing: border-box;
 }
 
 .celda-input:focus {
-    background: transparent;
-    box-shadow: none;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Cuando la celda está resuelta (verde), letras blancas */
+.celda-crucigrama.blanca.resuelta .celda-input,
+.celda-crucigrama.resuelta .celda-input {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Cuando la celda está incorrecta (roja), letras blancas */
+.celda-crucigrama.blanca.incorrecta .celda-input,
+.celda-crucigrama.incorrecta .celda-input {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
 }
 
 /* Pistas */
@@ -1161,7 +1104,6 @@
     font-size: 0.75rem;
 }
 
-/* Botón verificar */
 .crucigrama-controles {
     margin-top: var(--espaciado-lg);
     display: flex;
@@ -1187,40 +1129,9 @@
     box-shadow: 0 6px 25px rgba(52, 211, 153, 0.5);
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-    .crucigrama-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .celda-crucigrama {
-        width: 32px;
-        height: 32px;
-    }
-
-    .celda-input {
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 500px) {
-    .celda-crucigrama {
-        width: 26px;
-        height: 26px;
-    }
-
-    .celda-input {
-        font-size: 0.75rem;
-    }
-
-    .celda-numero {
-        font-size: 0.5rem;
-    }
-}
 /* ============================================================
    PUZZLE: MEZCLA FINAL (Nivel 10)
    ============================================================ */
-
 .puzzle-mezcla {
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -1284,7 +1195,6 @@
     margin-bottom: var(--espaciado-md);
 }
 
-/* Sopa corta */
 .sopa-corta-grid {
     display: grid;
     gap: 2px;
@@ -1326,7 +1236,6 @@
     box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
 }
 
-/* Memorama mini */
 .memorama-grid-mini {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1413,7 +1322,6 @@
     animation: shakeError 0.4s ease;
 }
 
-/* Crucigrama mini */
 .crucigrama-mini {
     display: grid;
     gap: 4px;
@@ -1425,13 +1333,15 @@
 .celda-crucigrama-mini {
     width: 50px;
     height: 50px;
-    background: rgba(226, 232, 240, 0.95);
+    background: #e2e8f0;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(100, 116, 139, 0.4);
     transition: all var(--transicion-media);
+    position: relative;
+    overflow: visible;
 }
 
 .celda-crucigrama-mini.resuelta {
@@ -1444,21 +1354,182 @@
 }
 
 .input-crucigrama-mini {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
     text-align: center;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #1e293b;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
     text-transform: uppercase;
-    padding: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    caret-color: #8b5cf6;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+.celda-crucigrama-mini.resuelta .input-crucigrama-mini {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.celda-crucigrama-mini.incorrecta .input-crucigrama-mini {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* ============================================================
+   PANTALLA DE DERROTA
+   ============================================================ */
+.puzzle-derrota {
+    text-align: center;
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+}
+
+.derrota-icono {
+    font-size: 4rem;
+    margin-bottom: var(--espaciado-md);
+    animation: pulse 1s ease infinite;
+}
+
+.puzzle-derrota h2 {
+    color: var(--color-error);
+    margin-bottom: var(--espaciado-md);
+}
+
+.puzzle-derrota p {
+    color: var(--color-texto-suave);
+    margin-bottom: var(--espaciado-md);
+}
+
+.derrota-info {
+    font-weight: 700;
+    color: var(--color-texto);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+    .crucigrama-layout {
+        grid-template-columns: 1fr;
+    }
+    .celda-crucigrama {
+        width: 32px;
+        height: 32px;
+    }
+    .celda-input {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .sopa-layout {
+        grid-template-columns: 1fr;
+    }
+    .sopa-palabras {
+        order: -1;
+    }
+    #lista-palabras {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .palabra-item {
+        font-size: 0.75rem;
+    }
+    .celda-sopa {
+        font-size: 0.7rem;
+    }
+    .memorama-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--espaciado-sm);
+    }
+    .carta-cara {
+        font-size: 0.65rem;
+        padding: var(--espaciado-xs);
+    }
+    .carta-frente.es-termino {
+        font-size: 0.75rem;
+    }
+    .carta-frente.es-definicion {
+        font-size: 0.6rem;
+    }
+    .carta-atras::before {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-nivel {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--espaciado-sm);
+    }
+    .info-nivel h1 {
+        font-size: 1.2rem;
+    }
+    .tarjeta-lectura {
+        padding: var(--espaciado-lg) var(--espaciado-md);
+    }
+    .texto-lectura {
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+    .barra-estado {
+        flex-direction: column;
+        gap: var(--espaciado-sm);
+    }
+    .vaquita-nivel {
+        width: 50px;
+        height: 50px;
+    }
+    .opciones-puzzle {
+        grid-template-columns: 1fr;
+    }
+    .frase-texto {
+        font-size: 1.05rem;
+        padding: var(--espaciado-md);
+    }
+    .espacio-blanco {
+        min-width: 70px;
+    }
+    .vf-botones {
+        grid-template-columns: 1fr;
+    }
+    .vf-texto {
+        font-size: 1.05rem;
+    }
+    .vf-boton {
+        padding: var(--espaciado-md);
+        flex-direction: row;
+        gap: var(--espaciado-md);
+    }
+    .vf-boton-icono {
+        font-size: 1.75rem;
+    }
 }
 
 @media (max-width: 500px) {
+    .celda-crucigrama {
+        width: 28px;
+        height: 28px;
+    }
+    .celda-input {
+        font-size: 0.9rem;
+    }
+    .celda-numero {
+        font-size: 0.5rem;
+    }
     .celda-crucigrama-mini {
         width: 40px;
         height: 40px;

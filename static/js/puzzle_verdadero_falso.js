@@ -16,6 +16,10 @@ class PuzzleVerdaderoFalso {
         this.bloqueado = false;
         this.temporizador = null;
 
+        // Sistema de intentos: solo el Nivel 4 pierde vida cada 2 fallos
+        this.usarIntentos = (this.nivel === 4);
+        this.intentosFallidos = 0;
+
         this.inicializarUI();
     }
 
@@ -25,6 +29,7 @@ class PuzzleVerdaderoFalso {
             <div class="puzzle-vf">
                 <div class="puzzle-header">
                     <span class="puzzle-progreso">Afirmación ${this.indiceActual + 1} / ${this.afirmaciones.length}</span>
+                    ${this.usarIntentos ? '<span class="puzzle-intentos" id="intentos-fallidos">Fallos: 0 / 2</span>' : ''}
                     <span class="puzzle-cm" id="cm-acumulado">+${this.cmAcumulado} CM</span>
                 </div>
 
@@ -38,7 +43,8 @@ class PuzzleVerdaderoFalso {
 
         this.renderizarAfirmacion();
         this.actualizarBarra();
-        this.iniciarTemporizador();
+        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
+        // this.iniciarTemporizador();
     }
 
     renderizarAfirmacion() {
@@ -123,24 +129,50 @@ class PuzzleVerdaderoFalso {
     async fallo(boton, respuestaCorrecta) {
         boton.classList.add('incorrecto');
 
-        try {
-            const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
-            const datos = await respuesta.json();
-            this.vidas = datos.vidas;
-            this.actualizarVidasUI();
+        // Si es nivel 4, acumula intentos (2 = 1 vida)
+        if (this.usarIntentos) {
+            this.intentosFallidos++;
+            const intentosEl = document.getElementById('intentos-fallidos');
+            if (intentosEl) intentosEl.textContent = `Fallos: ${this.intentosFallidos} / 2`;
 
-            if (this.vidas <= 0) {
-                setTimeout(() => this.derrota('Te quedaste sin vidas'), 1000);
-                return;
+            if (this.intentosFallidos >= 2) {
+                this.intentosFallidos = 0;
+                if (intentosEl) intentosEl.textContent = `Fallos: 0 / 2`;
+
+                try {
+                    const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
+                    const datos = await respuesta.json();
+                    this.vidas = datos.vidas;
+                    this.actualizarVidasUI();
+
+                    if (this.vidas <= 0) {
+                        setTimeout(() => this.derrota('Te quedaste sin vidas'), 1000);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error perdiendo vida:', error);
+                }
             }
-        } catch (error) {
-            console.error('Error perdiendo vida:', error);
+        } else {
+            // Nivel 9: cada fallo resta 1 vida (comportamiento original)
+            try {
+                const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
+                const datos = await respuesta.json();
+                this.vidas = datos.vidas;
+                this.actualizarVidasUI();
+
+                if (this.vidas <= 0) {
+                    setTimeout(() => this.derrota('Te quedaste sin vidas'), 1000);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error perdiendo vida:', error);
+            }
         }
 
         // Mostrar la respuesta correcta brevemente
         setTimeout(() => {
             boton.classList.remove('incorrecto');
-            // Marcar el botón correcto
             const botonCorrecto = document.querySelector(`.vf-boton[data-respuesta="${respuestaCorrecta}"]`);
             if (botonCorrecto) {
                 botonCorrecto.classList.add('revelado');
@@ -235,10 +267,9 @@ class PuzzleVerdaderoFalso {
     }
 }
 
-// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     if (window.DATOS_NIVEL && window.DATOS_NIVEL.tipo_puzzle === 'verdadero_falso') {
-        new PuzzleVerdaderoFalso(window.DATOS_NIVEL, {
+        window.puzzleInstance = new PuzzleVerdaderoFalso(window.DATOS_NIVEL, {
             vidasIniciales: window.VIDAS_INICIALES
         });
     }

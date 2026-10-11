@@ -37,7 +37,8 @@ class PuzzleMezclaFinal {
 
         this.renderizarFase();
         this.actualizarBarra();
-        this.iniciarTemporizador();
+        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
+        // this.iniciarTemporizador();
     }
 
     actualizarBarra() {
@@ -221,7 +222,11 @@ class PuzzleMezclaFinal {
                 if (this.sopaState.encontradas.size >= this.sopaState.palabras.length) this.siguienteFase(80);
             } else {
                 this.sopaState.celdas.forEach(c => c.el.classList.remove('seleccionada'));
-                this.perderVida();
+                const grid = document.getElementById('sopa-corta');
+                if (grid) {
+                    grid.classList.add('intento-fallido');
+                    setTimeout(() => grid.classList.remove('intento-fallido'), 400);
+                }
             }
             this.sopaState.celdas = [];
         };
@@ -490,7 +495,7 @@ class PuzzleMezclaFinal {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (window.DATOS_NIVEL && window.DATOS_NIVEL.tipo_puzzle === 'mezcla_final') {
-        new PuzzleMezclaFinal(window.DATOS_NIVEL, {
+        window.puzzleInstance = new PuzzleMezclaFinal(window.DATOS_NIVEL, {
             vidasIniciales: window.VIDAS_INICIALES
         });
     }

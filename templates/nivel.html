@@ -20,10 +20,11 @@
                 <a href="{{ url_for('menu') }}" class="volver-menu">← Menú</a>
             </header>
 
-            <!-- Barra de estado -->
+            <!-- Barra de estado con vaquita -->
+            <!-- Barra de estado con vaquita -->
             <div class="barra-estado">
                 <div class="vidas" id="vidas-puzzle">
-                    {% for i in range(3) %}
+                    {% for i in range(5) %}
                         {% if i < progreso.vidas %}
                             <span class="vida">❤️</span>
                         {% else %}
@@ -31,11 +32,13 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+                <div class="vaquita-nivel">
+                    <img src="{{ url_for('static', filename='img/vaquita_astronauta.png') }}" alt="Vaquita astronauta">
+                </div>
                 <div class="temporizador" id="temporizador">
                     ⏱️ <span id="tiempo-restante">{{ nivel.tiempo_segundos }}</span>s
                 </div>
             </div>
-
             <!-- Tarjeta de lectura -->
             <div class="tarjeta-lectura" id="tarjeta-lectura">
                 <span class="etiqueta-lectura">📖 Lectura</span>
@@ -71,7 +74,12 @@
             btnContinuar.style.display = 'none';
             contenedorPuzzle.style.display = 'block';
             barraEstado.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
+
+         // ⏱️ Iniciar el temporizador AHORA (solo cuando el jugador empieza el puzzle)
+        if (window.puzzleInstance && window.puzzleInstance.iniciarTemporizador) {
+            window.puzzleInstance.iniciarTemporizador();
+        }
+});
     </script>
 
     {% if nivel.tipo_puzzle == 'completar_frase' %}

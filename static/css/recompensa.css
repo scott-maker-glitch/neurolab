@@ -332,3 +332,85 @@
         font-size: 1.1rem;
     }
 }
+/* ============================================================
+   BARRA DE PROGRESO CON VAQUITA EN RECOMPENSA
+   ============================================================ */
+
+.barra-progreso-recompensa {
+    position: relative;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: var(--radio-full);
+    height: 12px;
+    margin-bottom: var(--espaciado-md);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    overflow: visible;
+    animation: fadeInUp 0.6s ease 0.55s both;
+    margin-top: var(--espaciado-lg);
+}
+
+.barra-progreso-relleno {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
+    border-radius: var(--radio-full);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+    transition: width 1s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.barra-progreso-relleno::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: brilloBarra 2s linear infinite;
+}
+
+.vaquita-recompensa {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    z-index: 10;
+    transition: left 1s ease;
+    animation: flotarVaquitaRecompensa 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.6));
+    pointer-events: none;
+}
+
+.vaquita-recompensa img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+@keyframes flotarVaquitaRecompensa {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-6px); }
+}
+
+.barra-info-recompensa {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--color-texto-suave);
+    margin-bottom: var(--espaciado-lg);
+    font-weight: 600;
+    animation: fadeInUp 0.6s ease 0.6s both;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .vaquita-recompensa {
+        width: 40px;
+        height: 40px;
+    }
+    .barra-info-recompensa {
+        font-size: 0.75rem;
+    }
+}

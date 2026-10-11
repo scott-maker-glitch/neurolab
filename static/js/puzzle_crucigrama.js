@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: CRUCIGRAMA (versión corregida)
+   NEUROLAB - PUZZLE: CRUCIGRAMA (v4 - corregido)
    ============================================================ */
 
 class PuzzleCrucigrama {
@@ -26,11 +26,8 @@ class PuzzleCrucigrama {
         this.inicializarUI();
     }
 
-    // ============================================================
-    // CONSTRUCCIÓN DEL GRID
-    // ============================================================
     construirGrid() {
-        // 1. Inicializar grid vacío
+        // Inicializar grid vacío
         for (let f = 0; f < this.gridAlto; f++) {
             this.grid[f] = [];
             for (let c = 0; c < this.gridAncho; c++) {
@@ -38,7 +35,7 @@ class PuzzleCrucigrama {
             }
         }
 
-        // 2. Colocar cada palabra
+        // Colocar cada palabra
         this.palabras.forEach(palabra => {
             const letras = palabra.palabra;
             for (let i = 0; i < letras.length; i++) {
@@ -53,15 +50,13 @@ class PuzzleCrucigrama {
 
                 // Verificar que esté dentro del grid
                 if (f < 0 || f >= this.gridAlto || c < 0 || c >= this.gridAncho) {
-                    console.error('Palabra fuera del grid:', palabra, f, c);
+                    console.warn(`Palabra "${palabra.palabra}" fuera del grid en (${f},${c})`);
                     continue;
                 }
 
-                // Marcar casilla como blanca
                 this.grid[f][c].tipo = 'blanca';
                 this.grid[f][c].palabras.push(palabra.numero);
 
-                // Guardar referencia
                 const key = `${f},${c}`;
                 if (!this.celdas[key]) {
                     this.celdas[key] = {
@@ -76,9 +71,6 @@ class PuzzleCrucigrama {
         });
     }
 
-    // ============================================================
-    // UI
-    // ============================================================
     inicializarUI() {
         const contenedor = document.getElementById('contenedor-puzzle');
         const horizontales = this.palabras.filter(p => p.direccion === 'horizontal');
@@ -131,7 +123,8 @@ class PuzzleCrucigrama {
         `;
 
         this.configurarEventos();
-        this.iniciarTemporizador();
+        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
+        // this.iniciarTemporizador();
     }
 
     renderizarCeldas() {
@@ -150,7 +143,7 @@ class PuzzleCrucigrama {
                     html += `
                         <div class="celda-crucigrama blanca" data-fila="${f}" data-col="${c}">
                             ${numero ? `<span class="celda-numero">${numero}</span>` : ''}
-                            <input type="text" maxlength="1" class="celda-input" data-fila="${f}" data-col="${c}" autocomplete="off">
+                            <input type="text" maxlength="1" class="celda-input" data-fila="${f}" data-col="${c}" autocomplete="off" inputmode="text">
                         </div>
                     `;
                 }
@@ -183,9 +176,10 @@ class PuzzleCrucigrama {
 
     alEscribir(input) {
         const valor = input.value.toUpperCase();
-        input.value = valor;
+        const soloLetras = valor.replace(/[^A-ZÁÉÍÓÚÑ]/g, '');
+        input.value = soloLetras.slice(-1);
 
-        if (valor) {
+        if (input.value) {
             this.verificarPalabraActual(input);
             this.moverSiguiente(input);
         }
@@ -196,19 +190,38 @@ class PuzzleCrucigrama {
 
         if (e.key === 'ArrowRight') {
             e.preventDefault();
+            this.direccionActiva = 'horizontal';
             this.moverAlSiguienteHorizontal(input);
         } else if (e.key === 'ArrowLeft') {
             e.preventDefault();
+            this.direccionActiva = 'horizontal';
             this.moverAlAnteriorHorizontal(input);
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
+            this.direccionActiva = 'vertical';
             this.moverAlSiguienteVertical(input);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
+            this.direccionActiva = 'vertical';
             this.moverAlAnteriorVertical(input);
-        } else if (e.key === 'Backspace' && !input.value) {
-            e.preventDefault();
-            this.moverAnterior(input);
+        } else if (e.key === 'Backspace') {
+            if (input.value) {
+                input.value = '';
+                e.preventDefault();
+                this.verificarPalabraActual(input);
+            } else {
+                e.preventDefault();
+                this.moverAnterior(input);
+                setTimeout(() => {
+                    if (document.activeElement && document.activeElement.classList.contains('celda-input')) {
+                        document.activeElement.value = '';
+                        this.verificarPalabraActual(document.activeElement);
+                    }
+                }, 10);
+            }
+        } else if (e.key === 'Delete') {
+            input.value = '';
+            this.verificarPalabraActual(input);
         } else if (e.key === 'Tab') {
             e.preventDefault();
             this.moverSiguiente(input);
@@ -276,6 +289,9 @@ class PuzzleCrucigrama {
         if (input) input.focus();
     }
 
+    // ============================================================
+    // NAVEGACIÓN (nombres corregidos)
+    // ============================================================
     moverSiguiente(input) {
         if (this.direccionActiva === 'horizontal') {
             this.moverAlSiguienteHorizontal(input);
@@ -284,32 +300,56 @@ class PuzzleCrucigrama {
         }
     }
 
-    moverSiguienteHorizontal(input) {
+    moverAlSiguienteHorizontal(input) {
         const fila = parseInt(input.dataset.fila);
         const col = parseInt(input.dataset.col);
-        const siguiente = document.querySelector(`.celda-input[data-fila="${fila}"][data-col="${col + 1}"]`);
-        if (siguiente) siguiente.focus();
+
+        for (let c = col + 1; c < this.gridAncho; c++) {
+            const siguiente = document.querySelector(`.celda-input[data-fila="${fila}"][data-col="${c}"]`);
+            if (siguiente) {
+                siguiente.focus();
+                return;
+            }
+        }
     }
 
     moverAlAnteriorHorizontal(input) {
         const fila = parseInt(input.dataset.fila);
         const col = parseInt(input.dataset.col);
-        const anterior = document.querySelector(`.celda-input[data-fila="${fila}"][data-col="${col - 1}"]`);
-        if (anterior) anterior.focus();
+
+        for (let c = col - 1; c >= 0; c--) {
+            const anterior = document.querySelector(`.celda-input[data-fila="${fila}"][data-col="${c}"]`);
+            if (anterior) {
+                anterior.focus();
+                return;
+            }
+        }
     }
 
     moverAlSiguienteVertical(input) {
         const fila = parseInt(input.dataset.fila);
         const col = parseInt(input.dataset.col);
-        const siguiente = document.querySelector(`.celda-input[data-fila="${fila + 1}"][data-col="${col}"]`);
-        if (siguiente) siguiente.focus();
+
+        for (let f = fila + 1; f < this.gridAlto; f++) {
+            const siguiente = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${col}"]`);
+            if (siguiente) {
+                siguiente.focus();
+                return;
+            }
+        }
     }
 
     moverAlAnteriorVertical(input) {
         const fila = parseInt(input.dataset.fila);
         const col = parseInt(input.dataset.col);
-        const anterior = document.querySelector(`.celda-input[data-fila="${fila - 1}"][data-col="${col}"]`);
-        if (anterior) anterior.focus();
+
+        for (let f = fila - 1; f >= 0; f--) {
+            const anterior = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${col}"]`);
+            if (anterior) {
+                anterior.focus();
+                return;
+            }
+        }
     }
 
     moverAnterior(input) {
@@ -320,6 +360,9 @@ class PuzzleCrucigrama {
         }
     }
 
+    // ============================================================
+    // VERIFICACIÓN
+    // ============================================================
     verificarPalabraActual(input) {
         const fila = parseInt(input.dataset.fila);
         const col = parseInt(input.dataset.col);
@@ -336,7 +379,7 @@ class PuzzleCrucigrama {
     }
 
     verificarPalabra(palabra) {
-        if (this.palabrasResueltas.has(palabra.numero)) return;
+        const yaResuelta = this.palabrasResueltas.has(palabra.numero);
 
         let palabraActual = '';
         for (let i = 0; i < palabra.palabra.length; i++) {
@@ -350,7 +393,11 @@ class PuzzleCrucigrama {
         }
 
         if (palabraActual === palabra.palabra) {
-            this.marcarPalabraResuelta(palabra);
+            if (!yaResuelta) {
+                this.marcarPalabraResuelta(palabra);
+            }
+        } else if (yaResuelta) {
+            this.desmarcarPalabra(palabra);
         }
     }
 
@@ -382,6 +429,30 @@ class PuzzleCrucigrama {
         }
     }
 
+    desmarcarPalabra(palabra) {
+        this.palabrasResueltas.delete(palabra.numero);
+
+        for (let i = 0; i < palabra.palabra.length; i++) {
+            let f = palabra.fila;
+            let c = palabra.col;
+            if (palabra.direccion === 'horizontal') c += i;
+            else f += i;
+
+            const celda = document.querySelector(`.celda-crucigrama[data-fila="${f}"][data-col="${c}"]`);
+            if (celda) celda.classList.remove('resuelta');
+        }
+
+        const pista = document.querySelector(`.pista-item[data-palabra="${palabra.numero}"]`);
+        if (pista) pista.classList.remove('resuelta');
+
+        const cmPalabra = Math.floor(this.cmBase / this.palabras.length);
+        this.cmAcumulado = Math.max(0, this.cmAcumulado - cmPalabra);
+        document.getElementById('cm-acumulado').textContent = `+${this.cmAcumulado} CM`;
+
+        document.querySelector('.puzzle-progreso').textContent = `Palabras: ${this.palabrasResueltas.size} / ${this.palabras.length}`;
+        this.actualizarBarra();
+    }
+
     async verificarCrucigrama() {
         let errores = 0;
 
@@ -406,6 +477,10 @@ class PuzzleCrucigrama {
                 this.marcarPalabraIncorrecta(palabra);
             }
         });
+
+        if (this.palabrasResueltas.size >= this.palabras.length) {
+            return;
+        }
 
         if (errores > 0) {
             try {
@@ -511,7 +586,7 @@ class PuzzleCrucigrama {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (window.DATOS_NIVEL && window.DATOS_NIVEL.tipo_puzzle === 'crucigrama') {
-        new PuzzleCrucigrama(window.DATOS_NIVEL, {
+        window.puzzleInstance = new PuzzleCrucigrama(window.DATOS_NIVEL, {
             vidasIniciales: window.VIDAS_INICIALES
         });
     }
