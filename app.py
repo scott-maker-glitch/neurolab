@@ -53,6 +53,54 @@ def get_db():
     conexion.row_factory = sqlite3.Row
     return conexion
 
+def inicializar_base_datos():
+    """Crea las tablas si no existen. Se ejecuta al arrancar la app."""
+    conexion = sqlite3.connect(DB_PATH)
+    cursor = conexion.cursor()
+
+    # Tabla de usuarios
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre_usuario TEXT UNIQUE NOT NULL,
+            contrasena_hash TEXT NOT NULL,
+            fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Tabla de progreso
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS progreso (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER UNIQUE NOT NULL,
+            nivel_actual INTEGER DEFAULT 1,
+            cm_total INTEGER DEFAULT 0,
+            titulo_actual TEXT DEFAULT 'Novato',
+            vidas INTEGER DEFAULT 5,
+            ultima_perdida_vida TIMESTAMP,
+            fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+        )
+    """)
+
+    # Tabla de niveles completados
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS niveles_completados (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            nivel INTEGER NOT NULL,
+            cm_obtenido INTEGER DEFAULT 0,
+            insignia TEXT,
+            fecha_completado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
+            UNIQUE(usuario_id, nivel)
+        )
+    """)
+
+    conexion.commit()
+    conexion.close()
+    print("✅ Base de datos inicializada correctamente.")
+
 # ============================================================
 # MODELO DE USUARIO
 # ============================================================
@@ -432,12 +480,15 @@ def recompensa(num_nivel):
     )
 
 # ============================================================
+# INICIALIZACIÓN (SE EJECUTA AL ARRANCAR, TAMBIÉN CON GUNICORN)
+# ============================================================
+
+inicializar_base_datos()
+
+# ============================================================
 # INICIO
 # ============================================================
 
 if __name__ == "__main__":
-    if not os.path.exists(DB_PATH):
-        print("⚠️  No existe la base de datos. Ejecuta primero: python init_db.py")
-    else:
-        print("🚀 Servidor iniciado en http://127.0.0.1:5000")
-        app.run(debug=True, host='0.0.0.0', port=5000)
+    print("🚀 Servidor iniciado en http://127.0.0.1:5000")
+    app.run(debug=True, host='0.0.0.0', port=5000)
