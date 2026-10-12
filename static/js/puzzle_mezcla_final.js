@@ -1,9 +1,10 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10) - v5 (con modal)
+   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10) - v6 (corregido)
    - Memorama: 3 errores = 1 vida
    - Crucigrama: 3 errores = 1 vida + auto-avance + navegación
    - Frase final: 1 error = 1 vida
-   - Al completar: muestra modal (no redirige)
+   - Sopa: touch móvil corregido
+   - Al completar: muestra modal
    ============================================================ */
 
 class PuzzleMezclaFinal {
@@ -203,22 +204,38 @@ class PuzzleMezclaFinal {
 
         const gridEl = document.getElementById('sopa-corta');
 
-        const iniciar = (e) => {
-            const t = (e.touches ? e.touches[0] : e).target;
-            if (!t.classList || !t.classList.contains('celda-sopa-corta')) return;
+        // ============================================================
+        // HELPERS PARA OBTENER CELDA (mouse y touch)
+        // ============================================================
+        const obtenerCeldaPorElemento = (elemento) => {
+            if (!elemento || !elemento.classList) return null;
+            if (!elemento.classList.contains('celda-sopa-corta')) return null;
+            return {
+                f: parseInt(elemento.dataset.fila),
+                c: parseInt(elemento.dataset.col),
+                el: elemento
+            };
+        };
+
+        const obtenerCeldaPorTouch = (touch) => {
+            const elemento = document.elementFromPoint(touch.clientX, touch.clientY);
+            return obtenerCeldaPorElemento(elemento);
+        };
+
+        const iniciar = (celda) => {
+            if (!celda) return;
             this.sopaState.seleccionando = true;
-            this.sopaState.inicio = { f: +t.dataset.fila, c: +t.dataset.col, el: t };
-            this.sopaState.celdas = [this.sopaState.inicio];
+            this.sopaState.inicio = celda;
+            this.sopaState.celdas = [celda];
             this.actualizarSelSopa();
         };
 
-        const extender = (e) => {
+        const extender = (celda) => {
             if (!this.sopaState.seleccionando) return;
-            const t = (e.touches ? e.touches[0] : e).target;
-            if (!t.classList || !t.classList.contains('celda-sopa-corta')) return;
-            const f = +t.dataset.fila, c = +t.dataset.col;
-            const df = f - this.sopaState.inicio.f, dc = c - this.sopaState.inicio.c;
-            if (df !== 0 && dc !== 0) return;
+            if (!celda) return;
+            const df = celda.f - this.sopaState.inicio.f;
+            const dc = celda.c - this.sopaState.inicio.c;
+            if (df !== 0 && dc !== 0) return; // Solo recto
             const pasos = Math.max(Math.abs(df), Math.abs(dc));
             const sf = Math.sign(df), sc = Math.sign(dc);
             this.sopaState.celdas = [];
@@ -258,12 +275,49 @@ class PuzzleMezclaFinal {
             this.sopaState.celdas = [];
         };
 
-        gridEl.addEventListener('mousedown', iniciar);
-        gridEl.addEventListener('mouseover', extender);
+        // ============================================================
+        // EVENTOS MOUSE
+        // ============================================================
+        gridEl.addEventListener('mousedown', (e) => {
+            const celda = obtenerCeldaPorElemento(e.target);
+            if (celda) iniciar(celda);
+        });
+        gridEl.addEventListener('mouseover', (e) => {
+            if (!this.sopaState.seleccionando) return;
+            const celda = obtenerCeldaPorElemento(e.target);
+            if (celda) extender(celda);
+        });
         document.addEventListener('mouseup', terminar);
-        gridEl.addEventListener('touchstart', e => { e.preventDefault(); iniciar(e); });
-        gridEl.addEventListener('touchmove', e => { e.preventDefault(); extender(e); });
-        gridEl.addEventListener('touchend', e => { e.preventDefault(); terminar(); });
+
+        // ============================================================
+        // EVENTOS TOUCH (MÓVIL)
+        // ============================================================
+        gridEl.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const celda = obtenerCeldaPorTouch(touch);
+            if (celda) iniciar(celda);
+        }, { passive: false });
+
+        gridEl.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!this.sopaState.seleccionando) return;
+            const touch = e.touches[0];
+            const celda = obtenerCeldaPorTouch(touch);
+            if (celda) extender(celda);
+        }, { passive: false });
+
+        gridEl.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            terminar();
+        }, { passive: false });
+
+        gridEl.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            this.sopaState.celdas.forEach(c => c.el.classList.remove('seleccionada'));
+            this.sopaState.celdas = [];
+            this.sopaState.seleccionando = false;
+        }, { passive: false });
     }
 
     actualizarSelSopa() {
