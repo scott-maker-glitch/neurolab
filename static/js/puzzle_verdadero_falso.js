@@ -16,7 +16,6 @@ class PuzzleVerdaderoFalso {
         this.bloqueado = false;
         this.temporizador = null;
 
-        // Sistema de intentos: solo el Nivel 4 pierde vida cada 2 fallos
         this.usarIntentos = (this.nivel === 4);
         this.intentosFallidos = 0;
 
@@ -43,8 +42,6 @@ class PuzzleVerdaderoFalso {
 
         this.renderizarAfirmacion();
         this.actualizarBarra();
-        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
-        // this.iniciarTemporizador();
     }
 
     renderizarAfirmacion() {
@@ -123,7 +120,6 @@ class PuzzleVerdaderoFalso {
                 this.renderizarAfirmacion();
                 this.actualizarBarra();
 
-                // ⬇️ ACTUALIZAR EL TEXTO "AFIRMACIÓN X / Y"
                 const progresoEl = document.getElementById('progreso-afirmacion');
                 if (progresoEl) {
                     progresoEl.textContent = `Afirmación ${this.indiceActual + 1} / ${this.afirmaciones.length}`;
@@ -135,7 +131,6 @@ class PuzzleVerdaderoFalso {
     async fallo(boton, respuestaCorrecta) {
         boton.classList.add('incorrecto');
 
-        // Si es nivel 4, acumula intentos (2 = 1 vida)
         if (this.usarIntentos) {
             this.intentosFallidos++;
             const intentosEl = document.getElementById('intentos-fallidos');
@@ -160,7 +155,6 @@ class PuzzleVerdaderoFalso {
                 }
             }
         } else {
-            // Nivel 9: cada fallo resta 1 vida
             try {
                 const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
                 const datos = await respuesta.json();
@@ -176,7 +170,6 @@ class PuzzleVerdaderoFalso {
             }
         }
 
-        // Mostrar la respuesta correcta brevemente
         setTimeout(() => {
             boton.classList.remove('incorrecto');
             const botonCorrecto = document.querySelector(`.vf-boton[data-respuesta="${respuestaCorrecta}"]`);
@@ -249,10 +242,10 @@ class PuzzleVerdaderoFalso {
                     cm: cmTotal
                 })
             });
-
-            window.location.href = `/recompensa/${this.nivel}`;
+            window.mostrarModalCompletado();
         } catch (error) {
             console.error('Error completando nivel:', error);
+            window.mostrarModalCompletado();
         }
     }
 

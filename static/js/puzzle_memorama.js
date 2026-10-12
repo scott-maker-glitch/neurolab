@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: MEMORAMA CONCEPTUAL
+   NEUROLAB - PUZZLE: MEMORAMA CONCEPTUAL (v2 - con modal)
    ============================================================ */
 
 class PuzzleMemorama {
@@ -22,9 +22,6 @@ class PuzzleMemorama {
         this.inicializarUI();
     }
 
-    // ============================================================
-    // MEZCLAR CARTAS
-    // ============================================================
     generarCartas() {
         const cartas = [];
 
@@ -51,9 +48,6 @@ class PuzzleMemorama {
         return cartas;
     }
 
-    // ============================================================
-    // UI
-    // ============================================================
     inicializarUI() {
         const contenedor = document.getElementById('contenedor-puzzle');
         const cartas = this.generarCartas();
@@ -89,14 +83,8 @@ class PuzzleMemorama {
         this.cartasElementos.forEach(carta => {
             carta.addEventListener('click', () => this.voltearCarta(carta));
         });
-
-        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
-        // this.iniciarTemporizador();
     }
 
-    // ============================================================
-    // LÓGICA DE VOLTEO
-    // ============================================================
     voltearCarta(carta) {
         if (this.bloqueado) return;
         if (carta.classList.contains('volteada')) return;
@@ -158,18 +146,13 @@ class PuzzleMemorama {
             carta1El.classList.add('incorrecta');
             carta2El.classList.add('incorrecta');
 
-            // Sumar intento fallido
             this.intentosFallidos++;
 
-            // Actualizar contador en pantalla
             const intentosEl = document.getElementById('intentos-fallidos');
             if (intentosEl) intentosEl.textContent = `Fallos: ${this.intentosFallidos} / 8`;
 
-            // Cada 8 fallos, pierde 1 vida
             if (this.intentosFallidos >= 8) {
                 this.intentosFallidos = 0;
-
-                // Resetear contador en pantalla
                 if (intentosEl) intentosEl.textContent = `Fallos: 0 / 8`;
 
                 try {
@@ -244,9 +227,10 @@ class PuzzleMemorama {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nivel: this.nivel, cm: cmTotal })
             });
-            window.location.href = `/recompensa/${this.nivel}`;
+            window.mostrarModalCompletado();
         } catch (error) {
             console.error('Error completando nivel:', error);
+            window.mostrarModalCompletado();
         }
     }
 
@@ -267,7 +251,6 @@ class PuzzleMemorama {
     }
 }
 
-// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     if (window.DATOS_NIVEL && window.DATOS_NIVEL.tipo_puzzle === 'memorama_conceptual') {
         window.puzzleInstance = new PuzzleMemorama(window.DATOS_NIVEL, {

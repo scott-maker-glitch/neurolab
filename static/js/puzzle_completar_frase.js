@@ -41,8 +41,6 @@ class PuzzleCompletarFrase {
 
         this.renderizarFrase();
         this.actualizarBarra();
-        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
-        // this.iniciarTemporizador();
     }
 
     renderizarFrase() {
@@ -122,7 +120,6 @@ class PuzzleCompletarFrase {
                 this.renderizarFrase();
                 this.actualizarBarra();
 
-                // ⬇️ ACTUALIZAR EL TEXTO "FRASE X / Y"
                 const progresoEl = document.getElementById('progreso-frase');
                 if (progresoEl) {
                     progresoEl.textContent = `Frase ${this.indiceActual + 1} / ${this.frases.length}`;
@@ -135,14 +132,11 @@ class PuzzleCompletarFrase {
         boton.classList.add('incorrecto');
         this.errores++;
 
-        // Sumar intento fallido
         this.intentosFallidos++;
 
-        // Actualizar contador en pantalla
         const intentosEl = document.getElementById('intentos-fallidos');
         if (intentosEl) intentosEl.textContent = `Fallos: ${this.intentosFallidos} / 2`;
 
-        // Cada 2 fallos, pierde 1 vida
         if (this.intentosFallidos >= 2) {
             this.intentosFallidos = 0;
             if (intentosEl) intentosEl.textContent = `Fallos: 0 / 2`;
@@ -222,10 +216,8 @@ class PuzzleCompletarFrase {
         const bonus = Math.floor((this.tiempoRestante / this.tiempoTotal) * this.cmBonus);
         const cmTotal = this.cmAcumulado + bonus;
 
-        console.log(`[DEBUG] Enviando al backend: nivel=${this.nivel}, cm=${cmTotal} (acumulado=${this.cmAcumulado}, bonus=${bonus})`);
-
         try {
-            const respuesta = await fetch('/api/completar_nivel', {
+            await fetch('/api/completar_nivel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -233,16 +225,10 @@ class PuzzleCompletarFrase {
                     cm: cmTotal
                 })
             });
-
-            const resultado = await respuesta.json();
-            console.log('[DEBUG] Respuesta del backend:', resultado);
-
-            window.location.href = `/recompensa/${this.nivel}`;
+            window.mostrarModalCompletado();
         } catch (error) {
             console.error('Error completando nivel:', error);
-            setTimeout(() => {
-                window.location.href = `/recompensa/${this.nivel}`;
-            }, 500);
+            window.mostrarModalCompletado();
         }
     }
 

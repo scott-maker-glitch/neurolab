@@ -1,8 +1,9 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10) - v4
+   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10) - v5 (con modal)
    - Memorama: 3 errores = 1 vida
    - Crucigrama: 3 errores = 1 vida + auto-avance + navegación
    - Frase final: 1 error = 1 vida
+   - Al completar: muestra modal (no redirige)
    ============================================================ */
 
 class PuzzleMezclaFinal {
@@ -376,7 +377,6 @@ class PuzzleMezclaFinal {
 
         this.cruciIntentosFallidos = 0;
 
-        // Construir grid
         const grid = [];
         for (let f = 0; f < gridAlto; f++) {
             grid[f] = [];
@@ -448,7 +448,6 @@ class PuzzleMezclaFinal {
         const inputs = document.querySelectorAll('#cruci-grid-10 .celda-input');
         let direccionActiva = 'horizontal';
 
-        // === HELPERS DE NAVEGACIÓN ===
         const moverAlSiguienteHorizontal = (input) => {
             const fila = parseInt(input.dataset.fila);
             const col = parseInt(input.dataset.col);
@@ -495,9 +494,7 @@ class PuzzleMezclaFinal {
             else moverAlAnteriorVertical(input);
         };
 
-        // === EVENTOS DE CADA INPUT ===
         inputs.forEach(input => {
-            // Auto-avance al escribir
             input.addEventListener('input', (e) => {
                 const v = e.target.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÑ]/g, '');
                 e.target.value = v.slice(-1);
@@ -508,7 +505,6 @@ class PuzzleMezclaFinal {
                 }
             });
 
-            // Navegación con teclado
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {
                     e.preventDefault();
@@ -550,7 +546,6 @@ class PuzzleMezclaFinal {
                 }
             });
 
-            // Detectar dirección al enfocar y resaltar pista activa
             input.addEventListener('focus', (e) => {
                 const fila = parseInt(e.target.dataset.fila);
                 const col = parseInt(e.target.dataset.col);
@@ -564,7 +559,6 @@ class PuzzleMezclaFinal {
 
                 direccionActiva = palabraHorizontal ? 'horizontal' : 'vertical';
 
-                // Resaltar pista activa
                 document.querySelectorAll('.pista-item').forEach(el => el.classList.remove('activa'));
                 const palabraActiva = palabras.find(p => {
                     if (p.direccion !== direccionActiva) return false;
@@ -581,7 +575,6 @@ class PuzzleMezclaFinal {
             });
         });
 
-        // Clic en pista para activar palabra
         document.querySelectorAll('.pista-item').forEach(pista => {
             pista.addEventListener('click', () => {
                 const numPalabra = parseInt(pista.dataset.palabra);
@@ -593,7 +586,6 @@ class PuzzleMezclaFinal {
             });
         });
 
-        // Botón verificar
         const btnVerificar = document.getElementById('btn-verificar-cruci');
         if (btnVerificar) {
             btnVerificar.addEventListener('click', () => {
@@ -781,9 +773,10 @@ class PuzzleMezclaFinal {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nivel: this.nivel, cm: cmTotal })
             });
-            window.location.href = `/recompensa/${this.nivel}`;
+            window.mostrarModalCompletado();
         } catch (e) {
             console.error(e);
+            window.mostrarModalCompletado();
         }
     }
 

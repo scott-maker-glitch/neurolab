@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: SOPA DE LETRAS (v3 - con timeout y pérdida de vida)
+   NEUROLAB - PUZZLE: SOPA DE LETRAS (v4 - con modal)
    ============================================================ */
 
 class PuzzleSopaLetras {
@@ -114,8 +114,6 @@ class PuzzleSopaLetras {
 
         this.renderizarGrid();
         this.configurarEventos();
-        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
-        // this.iniciarTemporizador();
     }
 
     renderizarGrid() {
@@ -132,12 +130,10 @@ class PuzzleSopaLetras {
     configurarEventos() {
         const grid = document.getElementById('sopa-grid');
 
-        // Mouse
         grid.addEventListener('mousedown', (e) => this.iniciarSeleccion(e));
         grid.addEventListener('mouseover', (e) => this.extenderSeleccion(e));
         document.addEventListener('mouseup', () => this.terminarSeleccion());
 
-        // Touch móvil
         grid.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
@@ -162,9 +158,6 @@ class PuzzleSopaLetras {
         }, { passive: false });
     }
 
-    // ============================================================
-    // HELPERS
-    // ============================================================
     obtenerCeldaPorElemento(elemento) {
         if (!elemento || !elemento.classList) return null;
         if (!elemento.classList.contains('celda-sopa')) return null;
@@ -180,9 +173,6 @@ class PuzzleSopaLetras {
         return this.obtenerCeldaPorElemento(elemento);
     }
 
-    // ============================================================
-    // SELECCIÓN
-    // ============================================================
     iniciarSeleccion(e) {
         const celda = this.obtenerCeldaPorElemento(e.target);
         if (!celda) return;
@@ -294,7 +284,6 @@ class PuzzleSopaLetras {
         this.cmAcumulado += cmPalabra;
         document.getElementById('cm-acumulado').textContent = `+${this.cmAcumulado} CM`;
 
-        // Actualizar el contador de progreso
         const progresoEl = document.getElementById('progreso-sopa');
         if (progresoEl) {
             progresoEl.textContent = `Palabras: ${this.palabrasEncontradas.size} / ${this.palabras.length}`;
@@ -310,8 +299,6 @@ class PuzzleSopaLetras {
     }
 
     async fallo() {
-        // En la sopa de letras NO se pierden vidas al fallar.
-        // Solo se limpia la selección y se muestra feedback visual.
         this.limpiarSeleccion();
 
         const grid = document.getElementById('sopa-grid');
@@ -361,7 +348,6 @@ class PuzzleSopaLetras {
             if (this.tiempoRestante <= 0) {
                 clearInterval(this.temporizador);
 
-                // ⚠️ Se acabó el tiempo: pierde 1 vida
                 try {
                     const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
                     const datos = await respuesta.json();
@@ -370,7 +356,6 @@ class PuzzleSopaLetras {
                     console.error('Error perdiendo vida por timeout:', error);
                 }
 
-                // Mostrar mensaje de tiempo agotado
                 const contenedor = document.getElementById('contenedor-puzzle');
                 if (contenedor) {
                     contenedor.innerHTML = `
@@ -402,9 +387,10 @@ class PuzzleSopaLetras {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nivel: this.nivel, cm: cmTotal })
             });
-            window.location.href = `/recompensa/${this.nivel}`;
+            window.mostrarModalCompletado();
         } catch (error) {
             console.error('Error completando nivel:', error);
+            window.mostrarModalCompletado();
         }
     }
 

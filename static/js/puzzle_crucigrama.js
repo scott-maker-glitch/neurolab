@@ -1,5 +1,5 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: CRUCIGRAMA (v5 - verificación automática)
+   NEUROLAB - PUZZLE: CRUCIGRAMA (v6 - con modal)
    ============================================================ */
 
 class PuzzleCrucigrama {
@@ -17,7 +17,6 @@ class PuzzleCrucigrama {
         this.palabrasResueltas = new Set();
         this.temporizador = null;
 
-        // Nuevo: contador de errores
         this.erroresConsecutivos = 0;
         this.ERRORES_POR_VIDA = 3;
 
@@ -51,7 +50,6 @@ class PuzzleCrucigrama {
                 }
 
                 if (f < 0 || f >= this.gridAlto || c < 0 || c >= this.gridAncho) {
-                    console.warn(`Palabra "${palabra.palabra}" fuera del grid en (${f},${c})`);
                     continue;
                 }
 
@@ -79,7 +77,6 @@ class PuzzleCrucigrama {
 
         contenedor.innerHTML = `
             <div class="puzzle-crucigrama">
-                <!-- Leyenda de reglas -->
                 <div class="crucigrama-aviso">
                     ⚠️ <strong>Recuerda:</strong> por cada 3 palabras erróneas pierdes una vida.
                 </div>
@@ -126,8 +123,6 @@ class PuzzleCrucigrama {
         `;
 
         this.configurarEventos();
-        // ⏱️ El temporizador se inicia desde nivel.html cuando el jugador hace clic en "Continuar al puzzle"
-        // this.iniciarTemporizador();
     }
 
     renderizarCeldas() {
@@ -287,9 +282,6 @@ class PuzzleCrucigrama {
         if (input) input.focus();
     }
 
-    // ============================================================
-    // NAVEGACIÓN
-    // ============================================================
     moverSiguiente(input) {
         if (this.direccionActiva === 'horizontal') {
             this.moverAlSiguienteHorizontal(input);
@@ -304,10 +296,7 @@ class PuzzleCrucigrama {
 
         for (let c = col + 1; c < this.gridAncho; c++) {
             const siguiente = document.querySelector(`.celda-input[data-fila="${fila}"][data-col="${c}"]`);
-            if (siguiente) {
-                siguiente.focus();
-                return;
-            }
+            if (siguiente) { siguiente.focus(); return; }
         }
     }
 
@@ -317,10 +306,7 @@ class PuzzleCrucigrama {
 
         for (let c = col - 1; c >= 0; c--) {
             const anterior = document.querySelector(`.celda-input[data-fila="${fila}"][data-col="${c}"]`);
-            if (anterior) {
-                anterior.focus();
-                return;
-            }
+            if (anterior) { anterior.focus(); return; }
         }
     }
 
@@ -330,10 +316,7 @@ class PuzzleCrucigrama {
 
         for (let f = fila + 1; f < this.gridAlto; f++) {
             const siguiente = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${col}"]`);
-            if (siguiente) {
-                siguiente.focus();
-                return;
-            }
+            if (siguiente) { siguiente.focus(); return; }
         }
     }
 
@@ -343,10 +326,7 @@ class PuzzleCrucigrama {
 
         for (let f = fila - 1; f >= 0; f--) {
             const anterior = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${col}"]`);
-            if (anterior) {
-                anterior.focus();
-                return;
-            }
+            if (anterior) { anterior.focus(); return; }
         }
     }
 
@@ -358,9 +338,6 @@ class PuzzleCrucigrama {
         }
     }
 
-    // ============================================================
-    // VERIFICACIÓN AUTOMÁTICA
-    // ============================================================
     verificarPalabraActual(input) {
         const fila = parseInt(input.dataset.fila);
         const col = parseInt(input.dataset.col);
@@ -379,7 +356,6 @@ class PuzzleCrucigrama {
     verificarPalabra(palabra) {
         const yaResuelta = this.palabrasResueltas.has(palabra.numero);
 
-        // Construir la palabra actual
         let palabraActual = '';
         let celdasLlenas = 0;
         for (let i = 0; i < palabra.palabra.length; i++) {
@@ -395,39 +371,31 @@ class PuzzleCrucigrama {
             }
         }
 
-        // Solo verificar cuando esté COMPLETA
         if (celdasLlenas === palabra.palabra.length) {
             if (palabraActual === palabra.palabra) {
-                // ✅ Correcta
                 if (!yaResuelta) {
                     this.marcarPalabraResuelta(palabra);
                 }
             } else {
-                // ❌ Incorrecta
                 if (!yaResuelta) {
                     this.registrarError(palabra);
                 }
             }
         } else if (yaResuelta) {
-            // Si ya estaba resuelta pero se borró alguna letra, desmarcar
             this.desmarcarPalabra(palabra);
         }
     }
 
     async registrarError(palabra) {
-        // Marcar la palabra como incorrecta visualmente
         this.marcarPalabraIncorrecta(palabra);
 
-        // Sumar 1 al contador de errores
         this.erroresConsecutivos++;
 
-        // Actualizar contador en pantalla
         const contadorEl = document.getElementById('contador-errores');
         if (contadorEl) {
             contadorEl.textContent = `Errores: ${this.erroresConsecutivos} / ${this.ERRORES_POR_VIDA}`;
         }
 
-        // Si llega a 3 errores, pierde 1 vida
         if (this.erroresConsecutivos >= this.ERRORES_POR_VIDA) {
             this.erroresConsecutivos = 0;
             if (contadorEl) {
@@ -449,7 +417,6 @@ class PuzzleCrucigrama {
             }
         }
 
-        // Borrar la palabra después de un delay para que el jugador pueda reintentar
         setTimeout(() => {
             for (let i = 0; i < palabra.palabra.length; i++) {
                 let f = palabra.fila;
@@ -458,9 +425,7 @@ class PuzzleCrucigrama {
                 else f += i;
 
                 const input = document.querySelector(`.celda-input[data-fila="${f}"][data-col="${c}"]`);
-                if (input) {
-                    input.value = '';
-                }
+                if (input) input.value = '';
             }
         }, 1000);
     }
@@ -571,7 +536,6 @@ class PuzzleCrucigrama {
             if (this.tiempoRestante <= 0) {
                 clearInterval(this.temporizador);
 
-                // ⚠️ Se acabó el tiempo: pierde 1 vida
                 try {
                     const respuesta = await fetch('/api/perder_vida', { method: 'POST' });
                     const datos = await respuesta.json();
@@ -611,9 +575,10 @@ class PuzzleCrucigrama {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nivel: this.nivel, cm: cmTotal })
             });
-            window.location.href = `/recompensa/${this.nivel}`;
+            window.mostrarModalCompletado();
         } catch (error) {
             console.error('Error completando nivel:', error);
+            window.mostrarModalCompletado();
         }
     }
 
