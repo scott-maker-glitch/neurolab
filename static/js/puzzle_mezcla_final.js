@@ -215,25 +215,41 @@ class PuzzleMezclaFinal {
         // CÁLCULO POR COORDENADAS (funciona en iOS y Android)
         // ============================================================
         const obtenerCeldaPorCoordenadas = (clientX, clientY) => {
-            const rect = gridEl.getBoundingClientRect();
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
+        // Buscar cualquier celda para medir su tamaño real
+        const celdaRef = gridEl.querySelector('.celda-sopa-corta');
+        if (!celdaRef) return null;
 
-            if (x < 0 || y < 0 || x > rect.width || y > rect.height) return null;
+        const rectGrid = gridEl.getBoundingClientRect();
+        const rectCelda = celdaRef.getBoundingClientRect();
 
-            const celdaAncho = rect.width / size;
-            const celdaAlto = rect.height / size;
+        // Verificar que el toque esté dentro del grid
+        if (clientX < rectGrid.left || clientX > rectGrid.right ||
+            clientY < rectGrid.top || clientY > rectGrid.bottom) {
+            return null;
+        }
 
-            const col = Math.floor(x / celdaAncho);
-            const fila = Math.floor(y / celdaAlto);
+        // Tamaño real de una celda + el gap (2px)
+        const celdaAncho = rectCelda.width + 2;
+        const celdaAlto = rectCelda.height + 2;
 
-            if (fila < 0 || fila >= size || col < 0 || col >= size) return null;
+        // Offset del padding (desde el borde del grid hasta la primera celda)
+        const offsetX = rectCelda.left - rectGrid.left;
+        const offsetY = rectCelda.top - rectGrid.top;
 
-            const el = gridEl.querySelector(`.celda-sopa-corta[data-fila="${fila}"][data-col="${col}"]`);
-            if (!el) return null;
+        // Posición relativa dentro del área de celdas
+        const x = clientX - rectGrid.left - offsetX + (celdaAncho - rectCelda.width) / 2;
+        const y = clientY - rectGrid.top - offsetY + (celdaAlto - rectCelda.height) / 2;
 
-            return { f: fila, c: col, el };
-        };
+        const col = Math.floor(x / celdaAncho);
+        const fila = Math.floor(y / celdaAlto);
+
+        if (fila < 0 || fila >= size || col < 0 || col >= size) return null;
+
+        const el = gridEl.querySelector(`.celda-sopa-corta[data-fila="${fila}"][data-col="${col}"]`);
+        if (!el) return null;
+
+        return { f: fila, c: col, el };
+    };
 
         const iniciar = (celda) => {
             if (!celda) return;
