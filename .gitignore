@@ -8,11 +8,5 @@ __pycache__/
 *.pyd
 .venv/
 
-# Ejecutables de ngrok (temporal)
-ngrok.exe
-
-# Sistema
-.DS_Store
-Thumbs.db
+# Variables de entorno (NUNCA subir)
 .env
-ca.pem
