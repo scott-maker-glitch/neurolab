@@ -1620,71 +1620,84 @@
     }
 }
 /* ============================================================
-   SOPA DE LETRAS CORTA (Nivel 10 - Mezcla Final)
+   SOPA DE LETRAS CORTA (Nivel 10) - Contenedor corregido
    ============================================================ */
+
 .sopa-corta-layout {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: minmax(0, 1fr) 240px;  /* ← CLAVE: minmax(0,1fr) evita desbordes */
     gap: var(--espaciado-lg);
     align-items: start;
     margin-top: var(--espaciado-md);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
-.sopa-corta-palabras {
-    background: rgba(15, 23, 42, 0.5);
-    padding: var(--espaciado-md);
+.sopa-corta-grid {
+    display: grid;
+    gap: 2px;
+    /* Ancho controlado: nunca mayor al contenedor */
+    width: 100%;
+    max-width: 100%;             /* ← CAMBIO: 100% en lugar de 400px */
+    margin: 0 auto;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 6px;
     border-radius: var(--radio-md);
     border: 1px solid rgba(251, 191, 36, 0.2);
-    text-align: left;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    overscroll-behavior: contain;
 }
 
-.sopa-corta-palabras h3 {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-advertencia);
-    margin-bottom: var(--espaciado-md);
-}
-
-#lista-palabras-corta {
-    list-style: none;
+.celda-sopa-corta {
+    aspect-ratio: 1;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
-    gap: var(--espaciado-xs);
-}
-
-.palabra-item-corta {
-    padding: var(--espaciado-xs) var(--espaciado-sm);
+    align-items: center;
+    justify-content: center;
     background: rgba(30, 41, 59, 0.6);
-    border-radius: var(--radio-sm);
+    border-radius: 3px;
     font-family: 'Poppins', sans-serif;
+    font-weight: 700;
     font-size: 0.85rem;
-    font-weight: 600;
     color: var(--color-texto);
-    transition: all var(--transicion-media);
-    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: all var(--transicion-rapida);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-.palabra-item-corta.encontrada {
-    background: rgba(52, 211, 153, 0.15);
-    color: var(--color-exito);
-    border-left-color: var(--color-exito);
-    text-decoration: line-through;
-    opacity: 0.7;
+.celda-sopa-corta.seleccionada {
+    background: linear-gradient(135deg, var(--color-advertencia), #d97706);
+    color: white;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
 }
 
-.sopa-progreso {
-    margin-top: var(--espaciado-md);
-    font-size: 0.85rem;
-    color: var(--color-texto-suave);
-    font-weight: 600;
-    text-align: center;
+.celda-sopa-corta.encontrada-sopa {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    color: white;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
 }
 
-/* Responsive */
+/* En móvil, apilamos: palabras arriba, grid abajo, 1 sola columna */
 @media (max-width: 700px) {
     .sopa-corta-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr;   /* ← 1 columna en móvil */
+        gap: var(--espaciado-md);
     }
     .sopa-corta-palabras {
         order: -1;
@@ -1696,16 +1709,18 @@
     .palabra-item-corta {
         font-size: 0.75rem;
     }
-}
-@media (max-width: 500px) {
-    .memorama-grid-mini {
-        grid-template-columns: repeat(3, 1fr);
+    .sopa-corta-grid {
+        max-width: 100%;
     }
 }
-.celda-sopa,
-.celda-sopa-corta {
-    touch-action: none;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
+
+@media (max-width: 400px) {
+    .sopa-corta-grid {
+        gap: 1px;
+        padding: 4px;
+    }
+    .celda-sopa-corta {
+        font-size: 0.7rem;
+        border-radius: 2px;
+    }
 }
