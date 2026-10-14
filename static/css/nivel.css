@@ -1707,8 +1707,25 @@
         flex-wrap: wrap;
     }
     .palabra-item-corta {
-        font-size: 0.75rem;
+    padding: var(--espaciado-xs) var(--espaciado-sm);
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: var(--radio-sm);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-texto);
+    transition: all var(--transicion-media);
+    border-left: 3px solid transparent;
     }
+
+    .palabra-item-corta.encontrada {
+    background: rgba(52, 211, 153, 0.15) !important;
+    color: var(--color-exito) !important;
+    border-left-color: var(--color-exito) !important;
+    text-decoration: line-through !important;
+    opacity: 0.7;
+    }
+    
     .sopa-corta-grid {
         max-width: 100%;
     }
