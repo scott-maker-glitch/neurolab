@@ -15,9 +15,11 @@ import os
 # ============================================================
 # CONFIGURACIÓN INICIAL
 # ============================================================
+# Intentar cargar .env si existe (solo en local)
+ruta_env = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(ruta_env):
+    load_dotenv(ruta_env)
 
-# Cargar variables desde el archivo .env
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "clave_por_defecto_solo_desarrollo")
