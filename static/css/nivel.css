@@ -1812,3 +1812,342 @@
         border-radius: 2px;
     }
 }
+/* ============================================================
+   CRUCIGRAMA (Nivel 5 y Nivel 10)
+   ============================================================ */
+
+.puzzle-crucigrama {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.puzzle-crucigrama::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario), var(--color-primario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+.crucigrama-aviso {
+    padding: var(--espaciado-sm) var(--espaciado-md);
+    background: rgba(251, 191, 36, 0.15);
+    border-left: 4px solid var(--color-advertencia);
+    border-radius: var(--radio-sm);
+    color: var(--color-advertencia);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: var(--espaciado-md);
+    animation: fadeInUp 0.5s ease 0.1s both;
+    line-height: 1.4;
+}
+
+.crucigrama-layout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--espaciado-lg);
+    margin-top: var(--espaciado-md);
+    align-items: start;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.crucigrama-pistas {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.pistas-seccion h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-secundario);
+    margin-bottom: var(--espaciado-sm);
+    padding-bottom: var(--espaciado-xs);
+    border-bottom: 2px solid rgba(34, 211, 238, 0.3);
+}
+
+.pistas-seccion ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-xs);
+}
+
+.pista-item {
+    padding: var(--espaciado-sm) var(--espaciado-md);
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: var(--radio-sm);
+    font-size: 0.85rem;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all var(--transicion-media);
+    border-left: 3px solid transparent;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.pista-item:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-left-color: var(--color-primario);
+}
+
+.pista-item.activa {
+    background: rgba(139, 92, 246, 0.2);
+    border-left-color: var(--color-primario);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+.pista-item.resuelta {
+    background: rgba(52, 211, 153, 0.1);
+    border-left-color: var(--color-exito);
+    color: var(--color-texto-suave);
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.pista-item strong {
+    color: var(--color-secundario);
+    margin-right: var(--espaciado-xs);
+}
+
+.pista-item em {
+    color: var(--color-texto-suave);
+    font-size: 0.75rem;
+}
+
+.crucigrama-grid {
+    display: grid;
+    gap: 2px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: var(--espaciado-sm);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.celda-crucigrama {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    overflow: visible;
+}
+
+.celda-crucigrama.negra {
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.celda-crucigrama.blanca {
+    background: #e2e8f0;
+    border: 1px solid rgba(100, 116, 139, 0.4);
+    transition: all var(--transicion-rapida);
+}
+
+.celda-crucigrama.blanca.activa {
+    background: #c7b3ff;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+}
+
+.celda-crucigrama.blanca.resuelta {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    border-color: var(--color-exito);
+}
+
+.celda-crucigrama.blanca.incorrecta {
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    animation: shakeError 0.4s ease;
+}
+
+.celda-numero {
+    position: absolute;
+    top: 1px;
+    left: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #1e293b;
+    pointer-events: none;
+    font-family: 'Poppins', sans-serif;
+    z-index: 3;
+}
+
+.celda-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+    text-transform: uppercase;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    z-index: 2;
+    caret-color: #8b5cf6;
+    box-sizing: border-box;
+}
+
+.celda-input:focus {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+
+.celda-crucigrama.blanca.resuelta .celda-input,
+.celda-crucigrama.resuelta .celda-input {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.celda-crucigrama.blanca.incorrecta .celda-input,
+.celda-crucigrama.incorrecta .celda-input {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Crucígrama Mini (Nivel 10) */
+.crucigrama-mini {
+    display: grid;
+    gap: 4px;
+    max-width: 500px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.celda-crucigrama-mini {
+    width: 50px;
+    height: 50px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(100, 116, 139, 0.4);
+    transition: all var(--transicion-media);
+    position: relative;
+    overflow: visible;
+}
+
+.celda-crucigrama-mini.resuelta {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+}
+
+.celda-crucigrama-mini.incorrecta {
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    animation: shakeError 0.4s ease;
+}
+
+.input-crucigrama-mini {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+    text-transform: uppercase;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    caret-color: #8b5cf6;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+/* ============================================================
+   RESPONSIVE DEL CRUCIGRAMA
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .crucigrama-layout {
+        grid-template-columns: 1fr;
+        gap: var(--espaciado-md);
+    }
+    .celda-crucigrama {
+        width: 32px;
+        height: 32px;
+    }
+    .celda-input {
+        font-size: 1rem;
+    }
+    .crucigrama-pistas {
+        width: 100%;
+    }
+    .pista-item {
+        font-size: 0.8rem;
+        padding: var(--espaciado-xs) var(--espaciado-sm);
+    }
+}
+
+@media (max-width: 500px) {
+    .celda-crucigrama {
+        width: 26px;
+        height: 26px;
+    }
+    .celda-input {
+        font-size: 0.85rem;
+    }
+    .celda-numero {
+        font-size: 0.5rem;
+    }
+    .crucigrama-grid {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    .pista-item {
+        font-size: 0.75rem;
+        padding: var(--espaciado-xs);
+    }
+    .pista-item em {
+        font-size: 0.65rem;
+    }
+    .celda-crucigrama-mini {
+        width: 40px;
+        height: 40px;
+    }
+    .input-crucigrama-mini {
+        font-size: 1.1rem;
+    }
+}
