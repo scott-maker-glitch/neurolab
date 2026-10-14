@@ -1,10 +1,9 @@
 /* ============================================================
-   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10) - v6 (corregido)
+   NEUROLAB - PUZZLE: MEZCLA FINAL (Nivel 10) - v7
+   - Sopa de letras: cálculo por coordenadas (funciona en iOS)
    - Memorama: 3 errores = 1 vida
-   - Crucigrama: 3 errores = 1 vida + auto-avance + navegación
+   - Crucigrama: 3 errores = 1 vida
    - Frase final: 1 error = 1 vida
-   - Sopa: touch móvil corregido
-   - Al completar: muestra modal
    ============================================================ */
 
 class PuzzleMezclaFinal {
@@ -142,7 +141,7 @@ class PuzzleMezclaFinal {
     }
 
     // ============================================================
-    // FASE 3: SOPA DE LETRAS
+    // FASE 3: SOPA DE LETRAS (CON CÁLCULO POR COORDENADAS)
     // ============================================================
     renderSopaCorta(contenedor, reto) {
         const size = reto.grid_size || 12;
@@ -177,7 +176,15 @@ class PuzzleMezclaFinal {
             for (let j = 0; j < size; j++)
                 if (!grid[i][j]) grid[i][j] = letras[Math.floor(Math.random() * letras.length)];
 
-        this.sopaState = { grid, palabras, encontradas: new Set(), seleccionando: false, celdas: [], inicio: null };
+        this.sopaState = {
+            grid,
+            palabras,
+            encontradas: new Set(),
+            seleccionando: false,
+            celdas: [],
+            inicio: null,
+            size: size
+        };
 
         contenedor.innerHTML = `
             <div class="mezcla-fase">
@@ -205,21 +212,27 @@ class PuzzleMezclaFinal {
         const gridEl = document.getElementById('sopa-corta');
 
         // ============================================================
-        // HELPERS PARA OBTENER CELDA (mouse y touch)
+        // CÁLCULO POR COORDENADAS (funciona en iOS y Android)
         // ============================================================
-        const obtenerCeldaPorElemento = (elemento) => {
-            if (!elemento || !elemento.classList) return null;
-            if (!elemento.classList.contains('celda-sopa-corta')) return null;
-            return {
-                f: parseInt(elemento.dataset.fila),
-                c: parseInt(elemento.dataset.col),
-                el: elemento
-            };
-        };
+        const obtenerCeldaPorCoordenadas = (clientX, clientY) => {
+            const rect = gridEl.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
 
-        const obtenerCeldaPorTouch = (touch) => {
-            const elemento = document.elementFromPoint(touch.clientX, touch.clientY);
-            return obtenerCeldaPorElemento(elemento);
+            if (x < 0 || y < 0 || x > rect.width || y > rect.height) return null;
+
+            const celdaAncho = rect.width / size;
+            const celdaAlto = rect.height / size;
+
+            const col = Math.floor(x / celdaAncho);
+            const fila = Math.floor(y / celdaAlto);
+
+            if (fila < 0 || fila >= size || col < 0 || col >= size) return null;
+
+            const el = gridEl.querySelector(`.celda-sopa-corta[data-fila="${fila}"][data-col="${col}"]`);
+            if (!el) return null;
+
+            return { f: fila, c: col, el };
         };
 
         const iniciar = (celda) => {
@@ -232,17 +245,17 @@ class PuzzleMezclaFinal {
 
         const extender = (celda) => {
             if (!this.sopaState.seleccionando) return;
-            if (!celda) return;
+            if (!celda || !this.sopaState.inicio) return;
             const df = celda.f - this.sopaState.inicio.f;
             const dc = celda.c - this.sopaState.inicio.c;
-            if (df !== 0 && dc !== 0) return; // Solo recto
+            if (df !== 0 && dc !== 0) return;
             const pasos = Math.max(Math.abs(df), Math.abs(dc));
             const sf = Math.sign(df), sc = Math.sign(dc);
             this.sopaState.celdas = [];
             for (let i = 0; i <= pasos; i++) {
                 const ff = this.sopaState.inicio.f + sf * i;
                 const cc = this.sopaState.inicio.c + sc * i;
-                const el = document.querySelector(`.celda-sopa-corta[data-fila="${ff}"][data-col="${cc}"]`);
+                const el = gridEl.querySelector(`.celda-sopa-corta[data-fila="${ff}"][data-col="${cc}"]`);
                 if (el) this.sopaState.celdas.push({ f: ff, c: cc, el });
             }
             this.actualizarSelSopa();
@@ -251,12 +264,23 @@ class PuzzleMezclaFinal {
         const terminar = () => {
             if (!this.sopaState.seleccionando) return;
             this.sopaState.seleccionando = false;
+
+            if (this.sopaState.celdas.length < 2) {
+                this.sopaState.celdas.forEach(c => c.el.classList.remove('seleccionada'));
+                this.sopaState.celdas = [];
+                return;
+            }
+
             const palabra = this.sopaState.celdas.map(c => this.sopaState.grid[c.f][c.c]).join('');
             const inv = palabra.split('').reverse().join('');
             const enc = this.sopaState.palabras.find(p => !this.sopaState.encontradas.has(p) && (p === palabra || p === inv));
+
             if (enc) {
                 this.sopaState.encontradas.add(enc);
-                this.sopaState.celdas.forEach(c => { c.el.classList.remove('seleccionada'); c.el.classList.add('encontrada-sopa'); });
+                this.sopaState.celdas.forEach(c => {
+                    c.el.classList.remove('seleccionada');
+                    c.el.classList.add('encontrada-sopa');
+                });
 
                 const item = document.querySelector(`.palabra-item-corta[data-palabra="${enc}"]`);
                 if (item) item.classList.add('encontrada');
@@ -266,36 +290,38 @@ class PuzzleMezclaFinal {
                 if (this.sopaState.encontradas.size >= this.sopaState.palabras.length) this.siguienteFase(80);
             } else {
                 this.sopaState.celdas.forEach(c => c.el.classList.remove('seleccionada'));
-                const grid = document.getElementById('sopa-corta');
-                if (grid) {
-                    grid.classList.add('intento-fallido');
-                    setTimeout(() => grid.classList.remove('intento-fallido'), 400);
+                if (gridEl) {
+                    gridEl.classList.add('intento-fallido');
+                    setTimeout(() => gridEl.classList.remove('intento-fallido'), 400);
                 }
             }
             this.sopaState.celdas = [];
         };
 
         // ============================================================
-        // EVENTOS MOUSE
+        // EVENTOS MOUSE (desktop)
         // ============================================================
         gridEl.addEventListener('mousedown', (e) => {
-            const celda = obtenerCeldaPorElemento(e.target);
-            if (celda) iniciar(celda);
+            const celda = obtenerCeldaPorCoordenadas(e.clientX, e.clientY);
+            if (celda) {
+                e.preventDefault();
+                iniciar(celda);
+            }
         });
-        gridEl.addEventListener('mouseover', (e) => {
+        gridEl.addEventListener('mousemove', (e) => {
             if (!this.sopaState.seleccionando) return;
-            const celda = obtenerCeldaPorElemento(e.target);
+            const celda = obtenerCeldaPorCoordenadas(e.clientX, e.clientY);
             if (celda) extender(celda);
         });
         document.addEventListener('mouseup', terminar);
 
         // ============================================================
-        // EVENTOS TOUCH (MÓVIL)
+        // EVENTOS TOUCH (móvil) - Los importantes
         // ============================================================
         gridEl.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
-            const celda = obtenerCeldaPorTouch(touch);
+            const celda = obtenerCeldaPorCoordenadas(touch.clientX, touch.clientY);
             if (celda) iniciar(celda);
         }, { passive: false });
 
@@ -303,7 +329,7 @@ class PuzzleMezclaFinal {
             e.preventDefault();
             if (!this.sopaState.seleccionando) return;
             const touch = e.touches[0];
-            const celda = obtenerCeldaPorTouch(touch);
+            const celda = obtenerCeldaPorCoordenadas(touch.clientX, touch.clientY);
             if (celda) extender(celda);
         }, { passive: false });
 
@@ -422,7 +448,7 @@ class PuzzleMezclaFinal {
     }
 
     // ============================================================
-    // FASE 5: CRUCIGRAMA (3 errores = 1 vida + auto-avance)
+    // FASE 5: CRUCIGRAMA
     // ============================================================
     renderCrucigrama(contenedor, reto) {
         const gridAncho = reto.grid_ancho || 12;
@@ -561,21 +587,13 @@ class PuzzleMezclaFinal {
 
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    direccionActiva = 'horizontal';
-                    moverAlSiguienteHorizontal(input);
+                    e.preventDefault(); direccionActiva = 'horizontal'; moverAlSiguienteHorizontal(input);
                 } else if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    direccionActiva = 'horizontal';
-                    moverAlAnteriorHorizontal(input);
+                    e.preventDefault(); direccionActiva = 'horizontal'; moverAlAnteriorHorizontal(input);
                 } else if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    direccionActiva = 'vertical';
-                    moverAlSiguienteVertical(input);
+                    e.preventDefault(); direccionActiva = 'vertical'; moverAlSiguienteVertical(input);
                 } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    direccionActiva = 'vertical';
-                    moverAlAnteriorVertical(input);
+                    e.preventDefault(); direccionActiva = 'vertical'; moverAlAnteriorVertical(input);
                 } else if (e.key === 'Backspace') {
                     if (input.value) {
                         input.value = '';
@@ -714,7 +732,7 @@ class PuzzleMezclaFinal {
     }
 
     // ============================================================
-    // FASE 6: FRASE FINAL (1 error = 1 vida)
+    // FASE 6: FRASE FINAL
     // ============================================================
     renderFraseFinal(contenedor, reto) {
         contenedor.innerHTML = `
