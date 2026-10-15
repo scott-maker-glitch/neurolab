@@ -1759,3 +1759,75 @@
         line-height: 1.5;
     }
 }
+
+/* Corrección definitiva de distribución móvil del crucigrama */
+@media screen and (max-width: 600px) {
+    #contenedor-puzzle .puzzle-crucigrama {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    #contenedor-puzzle .crucigrama-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        gap: 20px !important;
+    }
+
+    #contenedor-puzzle .crucigrama-grid {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        grid-template-columns: repeat(var(--columnas-crucigrama), minmax(0, 1fr)) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    #contenedor-puzzle .celda-crucigrama {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1;
+        box-sizing: border-box !important;
+    }
+
+    #contenedor-puzzle .celda-input {
+        width: 100% !important;
+        height: 100% !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        font-size: clamp(9px, 3vw, 15px) !important;
+    }
+
+    #contenedor-puzzle .crucigrama-pistas {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible !important;
+    }
+
+    #contenedor-puzzle .pistas-seccion,
+    #contenedor-puzzle .pistas-seccion ul,
+    #contenedor-puzzle .pista-item {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow-wrap: anywhere !important;
+        word-break: normal !important;
+    }
+
+    #contenedor-puzzle .pista-item {
+        line-height: 1.5 !important;
+        font-size: 14px !important;
+    }
+}
