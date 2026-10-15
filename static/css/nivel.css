@@ -1,9 +1,5 @@
 /* ============================================================
-   NEUROLAB - PANTALLA DE NIVEL (LECTURA + PUZZLES)
-   ============================================================ */
-
-/* ============================================================
-   1. PANTALLA Y HEADER DEL NIVEL
+   NEUROLAB - PANTALLA DE NIVEL (LECTURA)
    ============================================================ */
 
 .pantalla-nivel {
@@ -16,6 +12,9 @@
     margin: 0 auto;
 }
 
+/* ============================================================
+   HEADER DEL NIVEL
+   ============================================================ */
 .header-nivel {
     display: flex;
     justify-content: space-between;
@@ -70,9 +69,8 @@
 }
 
 /* ============================================================
-   2. BARRA DE ESTADO (VIDAS + VAQUITA + TIEMPO)
+   BARRA DE ESTADO (VIDAS + VAQUITA + TIEMPO)
    ============================================================ */
-
 .barra-estado {
     display: flex;
     justify-content: space-between;
@@ -94,3 +92,1603 @@
 
 .vidas .vida {
     transition: all var(--transicion-media);
+}
+
+.vidas .vida.perdida {
+    opacity: 0.25;
+    filter: grayscale(1);
+}
+
+.temporizador {
+    display: flex;
+    align-items: center;
+    gap: var(--espaciado-sm);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--color-secundario);
+    padding: var(--espaciado-xs) var(--espaciado-md);
+    background: rgba(34, 211, 238, 0.1);
+    border-radius: var(--radio-full);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+.temporizador.advertencia {
+    color: var(--color-advertencia);
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+    animation: pulse 0.5s ease-in-out infinite;
+}
+
+.temporizador.peligro {
+    color: var(--color-error);
+    background: rgba(248, 113, 113, 0.15);
+    border-color: rgba(248, 113, 113, 0.4);
+    animation: pulse 0.4s ease-in-out infinite;
+}
+
+/* ============================================================
+   VAQUITA ASTRONAUTA EN PANTALLA DE NIVEL
+   ============================================================ */
+.vaquita-nivel {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: visible;
+    filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.6));
+    animation: glowNivel 2s ease-in-out infinite;
+}
+
+.vaquita-nivel img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    animation: flotarNivel 3s ease-in-out infinite,
+               escalaNivel 3s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes flotarNivel {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes glowNivel {
+    0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 18px rgba(139, 92, 246, 0.9));
+    }
+}
+
+@keyframes escalaNivel {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+}
+
+/* ============================================================
+   TARJETA DE LECTURA
+   ============================================================ */
+.tarjeta-lectura {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    animation: fadeInUp 0.5s ease 0.2s both;
+    position: relative;
+    overflow: hidden;
+}
+
+.tarjeta-lectura::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario), var(--color-primario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+.etiqueta-lectura {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaciado-xs);
+    padding: var(--espaciado-xs) var(--espaciado-md);
+    background: rgba(139, 92, 246, 0.15);
+    border-radius: var(--radio-full);
+    color: var(--color-primario);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--espaciado-lg);
+}
+
+.texto-lectura {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--color-texto);
+    white-space: pre-wrap;
+    letter-spacing: 0.01em;
+}
+
+.texto-lectura p {
+    margin-bottom: var(--espaciado-md);
+}
+
+.texto-lectura .dialogo {
+    color: var(--color-secundario);
+    font-style: italic;
+    padding-left: var(--espaciado-md);
+    border-left: 3px solid rgba(34, 211, 238, 0.4);
+    margin: var(--espaciado-md) 0;
+}
+
+/* ============================================================
+   BOTÓN DE CONTINUAR
+   ============================================================ */
+.boton-continuar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaciado-sm);
+    width: 100%;
+    padding: var(--espaciado-md) var(--espaciado-xl);
+    margin-top: var(--espaciado-lg);
+    background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: var(--radio-md);
+    cursor: pointer;
+    transition: all var(--transicion-media);
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+    animation: fadeInUp 0.5s ease 0.3s both;
+}
+
+.boton-continuar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+}
+
+.boton-continuar:active {
+    transform: translateY(0);
+}
+
+/* ============================================================
+   MODAL DE INSTRUCCIONES
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--espaciado-md);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-contenido {
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    animation: fadeInUp 0.4s ease;
+    text-align: center;
+}
+
+.modal-contenido h2 {
+    margin-bottom: var(--espaciado-md);
+    color: var(--color-secundario);
+}
+
+.modal-contenido p {
+    color: var(--color-texto-suave);
+    margin-bottom: var(--espaciado-lg);
+    line-height: 1.7;
+}
+
+.modal-info {
+    display: flex;
+    justify-content: center;
+    gap: var(--espaciado-lg);
+    margin-bottom: var(--espaciado-lg);
+    flex-wrap: wrap;
+}
+
+.modal-info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--espaciado-xs);
+}
+
+.modal-info-item .icono {
+    font-size: 1.75rem;
+}
+
+.modal-info-item .etiqueta {
+    font-size: 0.75rem;
+    color: var(--color-texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.modal-info-item .valor {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-texto);
+}
+
+/* ============================================================
+   HEADER DE PUZZLES (común)
+   ============================================================ */
+.puzzle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--espaciado-md);
+    gap: var(--espaciado-sm);
+    flex-wrap: wrap;
+}
+
+.puzzle-progreso {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.puzzle-cm {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    color: var(--color-secundario);
+    font-weight: 700;
+}
+
+.puzzle-intentos {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    color: var(--color-advertencia);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--espaciado-xs) var(--espaciado-md);
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: var(--radio-full);
+    transition: all var(--transicion-media);
+}
+
+.barra-progreso-puzzle {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: var(--radio-full);
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: var(--espaciado-xl);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.barra-relleno {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
+    border-radius: var(--radio-full);
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* ============================================================
+   PUZZLE: COMPLETAR FRASE
+   ============================================================ */
+.puzzle-completar {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.puzzle-completar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario), var(--color-primario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+.frase-puzzle {
+    margin-bottom: var(--espaciado-xl);
+}
+
+.frase-texto {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--color-texto);
+    text-align: center;
+    padding: var(--espaciado-lg);
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.espacio-blanco {
+    display: inline-block;
+    min-width: 100px;
+    padding: 2px var(--espaciado-md);
+    margin: 0 var(--espaciado-xs);
+    background: rgba(139, 92, 246, 0.15);
+    border-bottom: 3px solid var(--color-primario);
+    border-radius: var(--radio-sm) var(--radio-sm) 0 0;
+    font-weight: 700;
+    color: var(--color-primario);
+    text-align: center;
+    transition: all var(--transicion-media);
+}
+
+.espacio-blanco.rellenado {
+    color: var(--color-exito);
+    border-bottom-color: var(--color-exito);
+    background: rgba(52, 211, 153, 0.15);
+    animation: pulse 0.5s ease;
+}
+
+.espacio-blanco.revelado {
+    color: var(--color-error);
+    border-bottom-color: var(--color-error);
+    background: rgba(248, 113, 113, 0.15);
+}
+
+.opciones-puzzle {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--espaciado-md);
+}
+
+.opcion {
+    padding: var(--espaciado-md) var(--espaciado-lg);
+    background: rgba(30, 41, 59, 0.8);
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--radio-md);
+    color: var(--color-texto);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transicion-media);
+    position: relative;
+    overflow: hidden;
+}
+
+.opcion:hover:not(.correcto):not(.incorrecto) {
+    border-color: var(--color-secundario);
+    background: rgba(34, 211, 238, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(34, 211, 238, 0.2);
+}
+
+.opcion.correcto {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    border-color: var(--color-exito);
+    color: white;
+    box-shadow: 0 0 25px rgba(52, 211, 153, 0.6);
+    animation: pulse 0.5s ease;
+}
+
+.opcion.incorrecto {
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    border-color: var(--color-error);
+    color: white;
+    animation: shakeError 0.4s ease;
+}
+
+/* ============================================================
+   PUZZLE: VERDADERO / FALSO
+   ============================================================ */
+.puzzle-vf {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.puzzle-vf::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-secundario), var(--color-primario), var(--color-secundario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+.vf-afirmacion {
+    text-align: center;
+    padding: var(--espaciado-xl) var(--espaciado-md);
+    margin-bottom: var(--espaciado-xl);
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.vf-icono {
+    font-size: 3rem;
+    margin-bottom: var(--espaciado-md);
+    animation: pulse 3s ease-in-out infinite;
+}
+
+.vf-texto {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: var(--color-texto);
+    font-weight: 600;
+    margin: 0;
+}
+
+.vf-botones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espaciado-md);
+}
+
+.vf-boton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaciado-sm);
+    padding: var(--espaciado-lg);
+    background: rgba(30, 41, 59, 0.8);
+    border: 3px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--radio-md);
+    color: var(--color-texto);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transicion-media);
+}
+
+.vf-boton-icono {
+    font-size: 2.5rem;
+    transition: transform var(--transicion-media);
+}
+
+.vf-boton-texto {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.vf-verdadero:hover:not(.correcto):not(.incorrecto) {
+    border-color: var(--color-exito);
+    background: rgba(52, 211, 153, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(52, 211, 153, 0.3);
+}
+
+.vf-falso:hover:not(.correcto):not(.incorrecto) {
+    border-color: var(--color-error);
+    background: rgba(248, 113, 113, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(248, 113, 113, 0.3);
+}
+
+.vf-boton:hover:not(.correcto):not(.incorrecto) .vf-boton-icono {
+    transform: scale(1.15);
+}
+
+.vf-boton.correcto {
+    border-color: var(--color-exito);
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    color: white;
+    box-shadow: 0 0 25px rgba(52, 211, 153, 0.6);
+    animation: pulse 0.5s ease;
+}
+
+.vf-boton.incorrecto {
+    border-color: var(--color-error);
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    color: white;
+    animation: shakeError 0.4s ease;
+}
+
+.vf-boton.revelado {
+    border-color: var(--color-advertencia);
+    background: rgba(251, 191, 36, 0.2);
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.5);
+    animation: pulse 0.6s ease;
+}
+
+/* ============================================================
+   PUZZLE: SOPA DE LETRAS
+   ============================================================ */
+.puzzle-sopa {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.puzzle-sopa::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-secundario), var(--color-primario), var(--color-secundario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+.sopa-layout {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: var(--espaciado-lg);
+    margin-top: var(--espaciado-md);
+}
+
+.sopa-grid {
+    display: grid;
+    gap: 2px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: var(--espaciado-sm);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.celda-sopa {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all var(--transicion-rapida);
+    user-select: none;
+}
+
+.celda-sopa:hover {
+    background: rgba(139, 92, 246, 0.2);
+}
+
+.celda-sopa.seleccionada {
+    background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
+    color: white;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+    transform: scale(1.05);
+}
+
+.celda-sopa.encontrada {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    color: white;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
+}
+
+.sopa-grid.intento-fallido,
+.sopa-corta-grid.intento-fallido {
+    animation: shakeSopa 0.4s ease;
+}
+
+@keyframes shakeSopa {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.sopa-palabras {
+    background: rgba(15, 23, 42, 0.5);
+    padding: var(--espaciado-md);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.sopa-palabras h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-texto-suave);
+    margin-bottom: var(--espaciado-md);
+}
+
+#lista-palabras {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-xs);
+}
+
+.palabra-item {
+    padding: var(--espaciado-xs) var(--espaciado-sm);
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: var(--radio-sm);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-texto);
+    transition: all var(--transicion-media);
+    border-left: 3px solid transparent;
+}
+
+.palabra-item.encontrada {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--color-exito);
+    border-left-color: var(--color-exito);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* ============================================================
+   PUZZLE: MEMORAMA CONCEPTUAL
+   ============================================================ */
+.puzzle-memorama {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.puzzle-memorama::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-advertencia), var(--color-primario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+.memorama-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--espaciado-md);
+    margin-top: var(--espaciado-md);
+    perspective: 1000px;
+}
+
+.carta-memorama {
+    aspect-ratio: 1;
+    cursor: pointer;
+    perspective: 1000px;
+    transition: transform var(--transicion-media);
+}
+
+.carta-memorama:hover:not(.encontrada):not(.volteada) {
+    transform: translateY(-5px);
+}
+
+.carta-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.carta-memorama.volteada .carta-inner,
+.carta-memorama.encontrada .carta-inner {
+    transform: rotateY(180deg);
+}
+
+.carta-cara {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: var(--radio-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--espaciado-sm);
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    word-break: break-word;
+    overflow: hidden;
+}
+
+.carta-atras {
+    background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
+    color: transparent;
+    font-size: 2rem;
+    font-weight: 800;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.carta-atras::before {
+    content: '🧠';
+    font-size: 2rem;
+    opacity: 0.6;
+}
+
+.carta-frente {
+    transform: rotateY(180deg);
+    background: rgba(30, 41, 59, 0.95);
+    color: var(--color-texto);
+    border: 2px solid rgba(34, 211, 238, 0.4);
+}
+
+.carta-frente.es-termino {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(30, 41, 59, 0.95));
+    color: var(--color-secundario);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.carta-frente.es-definicion {
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(30, 41, 59, 0.95));
+    color: var(--color-texto);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.carta-memorama.encontrada .carta-frente {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    color: white;
+    border-color: var(--color-exito);
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.5);
+}
+
+.carta-memorama.incorrecta .carta-frente {
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    color: white;
+    border-color: var(--color-error);
+    animation: shakeError 0.4s ease;
+}
+
+/* ============================================================
+   PUZZLE: CRUCIGRAMA
+   ============================================================ */
+.puzzle-crucigrama {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    .puzzle-crucigrama {
+        padding: var(--espaciado-md);
+    }
+}
+
+.puzzle-crucigrama::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario), var(--color-primario));
+    background-size: 200% 100%;
+    animation: gradienteMovil 3s linear infinite;
+}
+
+/* ⬇️ NUEVO: Aviso de reglas del crucigrama */
+.crucigrama-aviso {
+    padding: var(--espaciado-sm) var(--espaciado-md);
+    background: rgba(251, 191, 36, 0.15);
+    border-left: 4px solid var(--color-advertencia);
+    border-radius: var(--radio-sm);
+    color: var(--color-advertencia);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: var(--espaciado-md);
+    animation: fadeInUp 0.5s ease 0.1s both;
+    line-height: 1.4;
+}
+
+/* ⬇️ NUEVO: Contador de errores en el header */
+.puzzle-errores {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    color: var(--color-error);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--espaciado-xs) var(--espaciado-md);
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: var(--radio-full);
+    transition: all var(--transicion-media);
+}
+
+.crucigrama-layout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--espaciado-lg);
+    margin-top: var(--espaciado-md);
+    align-items: start;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.crucigrama-pistas {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.pista-item {
+    padding: var(--espaciado-sm) var(--espaciado-md);
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: var(--radio-sm);
+    font-size: 0.85rem;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all var(--transicion-media);
+    border-left: 3px solid transparent;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.crucigrama-grid {
+    display: grid;
+    gap: 2px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: var(--espaciado-sm);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    width: fit-content;
+}
+
+.celda-crucigrama {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    overflow: visible;
+}
+
+.celda-crucigrama.negra {
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.celda-crucigrama.blanca {
+    background: #e2e8f0;
+    border: 1px solid rgba(100, 116, 139, 0.4);
+    transition: all var(--transicion-rapida);
+}
+
+.celda-crucigrama.blanca.activa {
+    background: #c7b3ff;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+}
+
+.celda-crucigrama.blanca.resuelta {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    border-color: var(--color-exito);
+}
+
+.celda-crucigrama.blanca.incorrecta {
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    animation: shakeError 0.4s ease;
+}
+
+.celda-numero {
+    position: absolute;
+    top: 1px;
+    left: 3px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #1e293b;
+    pointer-events: none;
+    font-family: 'Poppins', sans-serif;
+    z-index: 3;
+}
+
+/* ============================================================
+   INPUT DEL CRUCIGRAMA
+   ============================================================ */
+
+.celda-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+    text-transform: uppercase;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    z-index: 2;
+    caret-color: #8b5cf6;
+    box-sizing: border-box;
+}
+
+.celda-input:focus {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Cuando la celda está resuelta (verde), letras blancas */
+.celda-crucigrama.blanca.resuelta .celda-input,
+.celda-crucigrama.resuelta .celda-input {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Cuando la celda está incorrecta (roja), letras blancas */
+.celda-crucigrama.blanca.incorrecta .celda-input,
+.celda-crucigrama.incorrecta .celda-input {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+
+.pistas-seccion h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-secundario);
+    margin-bottom: var(--espaciado-sm);
+    padding-bottom: var(--espaciado-xs);
+    border-bottom: 2px solid rgba(34, 211, 238, 0.3);
+}
+
+.pistas-seccion ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-xs);
+}
+
+
+.pista-item:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-left-color: var(--color-primario);
+}
+
+.pista-item.activa {
+    background: rgba(139, 92, 246, 0.2);
+    border-left-color: var(--color-primario);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+.pista-item.resuelta {
+    background: rgba(52, 211, 153, 0.1);
+    border-left-color: var(--color-exito);
+    color: var(--color-texto-suave);
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.pista-item strong {
+    color: var(--color-secundario);
+    margin-right: var(--espaciado-xs);
+}
+
+.pista-item em {
+    color: var(--color-texto-suave);
+    font-size: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .crucigrama-layout {
+        grid-template-columns: 1fr;
+        gap: var(--espaciado-md);
+    }
+    .celda-crucigrama {
+        width: 32px;
+        height: 32px;
+    }
+    .celda-input {
+        font-size: 1rem;
+    }
+    .crucigrama-pistas {
+        width: 100%;
+    }
+    .pista-item {
+        font-size: 0.8rem;
+        padding: var(--espaciado-xs) var(--espaciado-sm);
+    }
+}
+
+@media (max-width: 500px) {
+    .celda-crucigrama {
+        width: 26px;
+        height: 26px;
+    }
+    .celda-input {
+        font-size: 0.85rem;
+    }
+    .celda-numero {
+        font-size: 0.5rem;
+    }
+    .crucigrama-grid {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    .pista-item {
+        font-size: 0.75rem;
+        padding: var(--espaciado-xs);
+    }
+    .pista-item em {
+        font-size: 0.65rem;
+    }
+}
+
+
+/* ============================================================
+   PUZZLE: MEZCLA FINAL (Nivel 10)
+   ============================================================ */
+.puzzle-mezcla {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: var(--radio-lg);
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.puzzle-mezcla::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-advertencia), var(--color-primario), var(--color-secundario), var(--color-advertencia));
+    background-size: 300% 100%;
+    animation: gradienteMovil 4s linear infinite;
+}
+
+.mezcla-contenido {
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.mezcla-fase {
+    text-align: center;
+    padding: var(--espaciado-lg) var(--espaciado-md);
+}
+
+.fase-icono {
+    font-size: 3.5rem;
+    margin-bottom: var(--espaciado-md);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.fase-titulo {
+    color: var(--color-advertencia);
+    margin-bottom: var(--espaciado-lg);
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+}
+
+.fase-frase {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--color-texto);
+    padding: var(--espaciado-lg);
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(251, 191, 36, 0.15);
+    margin-bottom: var(--espaciado-lg);
+}
+
+.fase-instruccion {
+    color: var(--color-texto-suave);
+    font-size: 0.95rem;
+    margin-bottom: var(--espaciado-md);
+}
+
+.sopa-corta-grid {
+    display: grid;
+    gap: 2px;
+    max-width: 400px;
+    margin: 0 auto;
+    background: rgba(15, 23, 42, 0.6);
+    padding: var(--espaciado-sm);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    user-select: none;
+    touch-action: none;
+    -webkit-user-select: none;
+}
+
+.celda-sopa-corta {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 3px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all var(--transicion-rapida);
+    user-select: none;
+}
+
+.celda-sopa-corta.seleccionada {
+    background: linear-gradient(135deg, var(--color-advertencia), #d97706);
+    color: white;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+}
+
+.celda-sopa-corta.encontrada-sopa {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    color: white;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
+}
+
+.memorama-grid-mini {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--espaciado-md);
+    max-width: 500px;
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+.memorama-grid-mini .carta-memorama {
+    aspect-ratio: 1.2;
+    cursor: pointer;
+    perspective: 1000px;
+}
+
+.memorama-grid-mini .carta-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.memorama-grid-mini .carta-memorama.volteada .carta-inner,
+.memorama-grid-mini .carta-memorama.encontrada .carta-inner {
+    transform: rotateY(180deg);
+}
+
+.memorama-grid-mini .carta-cara {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: var(--radio-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--espaciado-sm);
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.memorama-grid-mini .carta-atras {
+    background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
+    color: transparent;
+    font-size: 2rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.memorama-grid-mini .carta-atras::before {
+    content: '🧠';
+    font-size: 2rem;
+    opacity: 0.7;
+}
+
+.memorama-grid-mini .carta-frente {
+    transform: rotateY(180deg);
+    background: rgba(30, 41, 59, 0.95);
+    color: var(--color-texto);
+    border: 2px solid rgba(34, 211, 238, 0.4);
+}
+
+.memorama-grid-mini .carta-frente.es-termino {
+    color: var(--color-secundario);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.memorama-grid-mini .carta-memorama.encontrada .carta-frente {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+    color: white;
+    border-color: var(--color-exito);
+}
+
+.memorama-grid-mini .carta-memorama.incorrecta .carta-frente {
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    color: white;
+    border-color: var(--color-error);
+    animation: shakeError 0.4s ease;
+}
+
+.crucigrama-mini {
+    display: grid;
+    gap: 4px;
+    max-width: 500px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.celda-crucigrama-mini {
+    width: 50px;
+    height: 50px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(100, 116, 139, 0.4);
+    transition: all var(--transicion-media);
+    position: relative;
+    overflow: visible;
+}
+
+.celda-crucigrama-mini.resuelta {
+    background: linear-gradient(135deg, var(--color-exito), #059669);
+}
+
+.celda-crucigrama-mini.incorrecta {
+    background: linear-gradient(135deg, var(--color-error), #dc2626);
+    animation: shakeError 0.4s ease;
+}
+
+.input-crucigrama-mini {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+    text-transform: uppercase;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    caret-color: #8b5cf6;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+.celda-crucigrama-mini.resuelta .input-crucigrama-mini {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.celda-crucigrama-mini.incorrecta .input-crucigrama-mini {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* ============================================================
+   PANTALLA DE DERROTA
+   ============================================================ */
+.puzzle-derrota {
+    text-align: center;
+    padding: var(--espaciado-xl);
+    animation: fadeInUp 0.5s ease;
+}
+
+.derrota-icono {
+    font-size: 4rem;
+    margin-bottom: var(--espaciado-md);
+    animation: pulse 1s ease infinite;
+}
+
+.puzzle-derrota h2 {
+    color: var(--color-error);
+    margin-bottom: var(--espaciado-md);
+}
+
+.puzzle-derrota p {
+    color: var(--color-texto-suave);
+    margin-bottom: var(--espaciado-md);
+}
+
+.derrota-info {
+    font-weight: 700;
+    color: var(--color-texto);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+    .crucigrama-layout {
+        grid-template-columns: 1fr;
+    }
+    .celda-crucigrama {
+        width: 32px;
+        height: 32px;
+    }
+    .celda-input {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .sopa-layout {
+        grid-template-columns: 1fr;
+    }
+    .sopa-palabras {
+        order: -1;
+    }
+    #lista-palabras {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .palabra-item {
+        font-size: 0.75rem;
+    }
+    .celda-sopa {
+        font-size: 0.7rem;
+    }
+    .memorama-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--espaciado-sm);
+    }
+    .carta-cara {
+        font-size: 0.65rem;
+        padding: var(--espaciado-xs);
+    }
+    .carta-frente.es-termino {
+        font-size: 0.75rem;
+    }
+    .carta-frente.es-definicion {
+        font-size: 0.6rem;
+    }
+    .carta-atras::before {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-nivel {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--espaciado-sm);
+    }
+    .info-nivel h1 {
+        font-size: 1.2rem;
+    }
+    .tarjeta-lectura {
+        padding: var(--espaciado-lg) var(--espaciado-md);
+    }
+    .texto-lectura {
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+    .barra-estado {
+        flex-direction: column;
+        gap: var(--espaciado-sm);
+    }
+    .vaquita-nivel {
+        width: 50px;
+        height: 50px;
+    }
+    .opciones-puzzle {
+        grid-template-columns: 1fr;
+    }
+    .frase-texto {
+        font-size: 1.05rem;
+        padding: var(--espaciado-md);
+    }
+    .espacio-blanco {
+        min-width: 70px;
+    }
+    .vf-botones {
+        grid-template-columns: 1fr;
+    }
+    .vf-texto {
+        font-size: 1.05rem;
+    }
+    .vf-boton {
+        padding: var(--espaciado-md);
+        flex-direction: row;
+        gap: var(--espaciado-md);
+    }
+    .vf-boton-icono {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .celda-crucigrama {
+        width: 28px;
+        height: 28px;
+    }
+    .celda-input {
+        font-size: 0.9rem;
+    }
+    .celda-numero {
+        font-size: 0.5rem;
+    }
+    .celda-crucigrama-mini {
+        width: 40px;
+        height: 40px;
+    }
+    .input-crucigrama-mini {
+        font-size: 1.1rem;
+    }
+}
+/* ============================================================
+   SOPA DE LETRAS CORTA (Nivel 10 - Mezcla Final)
+   ============================================================ */
+.sopa-corta-layout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--espaciado-lg);
+    align-items: start;
+    margin-top: var(--espaciado-md);
+}
+
+.sopa-corta-palabras {
+    background: rgba(15, 23, 42, 0.5);
+    padding: var(--espaciado-md);
+    border-radius: var(--radio-md);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    text-align: left;
+}
+
+.sopa-corta-palabras h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-advertencia);
+    margin-bottom: var(--espaciado-md);
+}
+
+#lista-palabras-corta {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-xs);
+}
+
+.palabra-item-corta {
+    padding: var(--espaciado-xs) var(--espaciado-sm);
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: var(--radio-sm);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-texto);
+    transition: all var(--transicion-media);
+    border-left: 3px solid transparent;
+}
+
+.palabra-item-corta.encontrada {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--color-exito);
+    border-left-color: var(--color-exito);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.sopa-progreso {
+    margin-top: var(--espaciado-md);
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    .sopa-corta-layout {
+        grid-template-columns: 1fr;
+    }
+    .sopa-corta-palabras {
+        order: -1;
+    }
+    #lista-palabras-corta {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .palabra-item-corta {
+        font-size: 0.75rem;
+    }
+}
+@media (max-width: 500px) {
+    .memorama-grid-mini {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
