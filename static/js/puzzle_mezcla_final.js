@@ -503,8 +503,8 @@ class PuzzleMezclaFinal {
                 <p class="fase-instruccion" style="color: var(--color-advertencia); font-weight: 600;">
                     ⚠️ Cada 3 palabras erróneas pierdes 1 vida
                 </p>
-                <div class="crucigrama-layout" style="display: grid; grid-template-columns: auto 1fr; gap: 2rem; margin-top: 1rem; text-align: left;">
-                    <div class="crucigrama-grid" id="cruci-grid-10" style="display: grid; gap: 2px; grid-template-columns: repeat(${gridAncho}, 1fr);">
+                <div class="crucigrama-layout" style="margin-top: 1rem; text-align: left;">
+                    <div class="crucigrama-grid" id="cruci-grid-10" style="--grid-ancho: ${gridAncho};">
                         ${grid.map((fila, f) => fila.map((celda, c) => {
                             if (celda.tipo === 'negra') {
                                 return `<div class="celda-crucigrama negra"></div>`;
